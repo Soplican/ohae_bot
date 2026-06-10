@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Local Discohook</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="top-bar">
+    <span id="userDisplay"></span>
+    <button id="logoutBtn" class="secondary">Выйти</button>
+  </div>
+
+  <div class="wrap">
+    <div class="panel">
+      <h3>Редактор</h3>
+      <div class="content">
+        <div class="tabs">
+          <button class="tab active" id="tabVisual" type="button">Визуальный редактор</button>
+          <button class="tab" id="tabJson" type="button">JSON</button>
+        </div>
+
+        <div id="panelVisual">
+          <div class="row">
+            <div>
+              <label>Режим</label>
+              <select id="mode">
+                <option value="bot">От имени бота</option>
+                <option value="webhook">Вебхук</option>
+              </select>
+            </div>
+            <div>
+              <label>Выберите сервер (режим бота)</label>
+              
+<div class="dropdown">
+  <div id="guildDropdownBtn" class="dropdownBtn">Выберите сервер</div>
+  <div id="guildDropdownMenu" class="dropdownMenu">
+    <div class="dropdownSearchWrap"><input id="guildSearch" class="dropdownSearch" placeholder="Поиск сервера..."></div>
+    <div id="guildDropdownList"></div>
+  </div>
+</div>
+<select id="guildSelect" class="hidden"></select>
+
+              <div class="bannerWrap"><img id="guildBanner" class="bannerImg" alt="banner"/></div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Канал (режим бота)</label>
+              <div class="dropdown">
+                <div id="channelDropdownBtn" class="dropdownBtn">Выбрать канал</div>
+                <div id="channelDropdownMenu" class="dropdownMenu"></div>
+              </div>
+              <select id="channelSelect" class="hidden"></select>
+              <div class="hint">Выбери канал — ID подставится автоматически.</div>
+            </div>
+            <div>
+              <label>ID Канала (режим бота)</label>
+              <input id="channelId" placeholder="авто подставится"/>
+              <div class="hint">Можно вручную, если нужно.</div>
+            </div>
+          </div>
+
+          <label>Вебхук ссылка (вебхук режим)</label>
+          <input id="webhookUrl" placeholder="https://discord.com/api/webhooks/..."/>
+
+
+          <hr>
+
+          <label>Сообщение</label>
+          <textarea id="v_content" style="min-height:120px"></textarea>
+
+          <div class="row">
+            <div>
+              <label>Ник (для webhook)</label>
+              <input id="v_username" placeholder="Discohook (optional)"/>
+            </div>
+            <div>
+              <label>Лого URL (для webhook)</label>
+              <input id="v_avatar" placeholder="https://... (optional)"/>
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="row">
+            <div>
+              <label>Кнопки</label>
+              <div class="hint">1 строка (до 5 кнопок)</div>
+            </div>
+            <div class="right">
+              <button class="secondary" id="addButton" type="button">Добавить кнопку</button>
+            </div>
+          </div>
+          <div id="buttonsContainer"></div>
+
+          <hr>
+
+          <div class="row">
+            <div>
+              <label>Embeds</label>
+              <div class="hint">До 10 embed, поля до 25</div>
+            </div>
+            <div class="right">
+              <button id="addEmbed" type="button">Добавить Embed</button>
+            </div>
+          </div>
+          <div id="embedsContainer"></div>
+
+          <div class="btns">
+            <button id="sendBtn" type="button">Отправить</button>
+            <button class="secondary" id="exampleBtn" type="button">Загрузить пример</button>
+          </div>
+
+          <label>Результат</label>
+          <pre id="result">—</pre>
+        </div>
+
+        <div id="panelJson" class="hidden">
+          <label>Payload JSON</label>
+          <textarea id="payload"></textarea>
+
+          <div class="btns">
+            <button id="sendBtn2" type="button">Отправить</button>
+            <button class="secondary" id="formatBtn" type="button">Format JSON</button>
+            <button class="secondary" id="jsonToVisualBtn" type="button">JSON → Визуально</button>
+          </div>
+
+          <label>Result</label>
+          <pre id="result2">—</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Просмотр (как будет в Discord)</h3>
+      <div class="previewWrap">
+        <div class="msg">
+          <div class="avatar" id="p_avatar"></div>
+          <div class="msgBody">
+            <div class="headerLine">
+              <div class="pName" id="p_name">Бот</div>
+              <div class="pMeta">Просмотр</div>
+            </div>
+            <div class="pContent" id="p_content"></div>
+            <div id="p_embeds"></div>
+            <div class="buttons" id="p_buttons"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

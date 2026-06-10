@@ -1,0 +1,81 @@
+
+/* ===== Majestic Theme ===== */
+body {
+    background: #07070A;
+    font-family: Inter, sans-serif;
+    color: white;
+}
+
+.sidebar {
+    background: rgba(20,20,30,0.7);
+    backdrop-filter: blur(18px);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg,#FF2D6F,#FF6AA2);
+    border-radius: 14px;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: .25s;
+}
+
+.btn-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(255,45,111,0.4);
+}
+
+/* ===== Role Selector ===== */
+.role-select {
+    position: relative;
+    width: 100%;
+}
+
+.role-search {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #2a2a3a;
+    background: #11111a;
+    color: white;
+}
+
+.role-dropdown {
+    position: absolute;
+    width: 100%;
+    max-height: 220px;
+    overflow-y: auto;
+    background: #0e0e14;
+    border-radius: 12px;
+    margin-top: 6px;
+    box-shadow: 0 0 15px rgba(255,45,111,0.15);
+    display: none;
+    z-index: 100;
+}
+
+.role-option {
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    gap: 8px;
+}
+
+.role-option:hover {
+    background: rgba(255,45,111,0.15);
+}
+
+.role-tags {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.role-tag {
+    background: linear-gradient(135deg,#FF2D6F,#FF6AA2);
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+}

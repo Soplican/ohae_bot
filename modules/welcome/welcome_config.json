@@ -1,0 +1,45 @@
+{
+  "enabled": true,
+  "channel_id": "1470182981858492711",
+
+  "title": "Добро пожаловать в семью Phantom",
+  "greeting": "{mention}, рады приветствовать тебя.",
+  "footer_text": "Phantom FamQ • Atlanta",
+
+  "leave": {
+    "enabled": false,
+    "channel_id": 924692757421895711,
+    "title": "Участник покинул сервер",
+    "text": "{user} покинул сервер.",
+    "footer_text": "Phantom FamQ • Atlanta"
+  },
+
+  "rows": [
+    { "type": "separator" },
+
+    { "type": "heading", "text": "Навигация" },
+
+    {
+      "type": "section",
+      "text": "**Подать заявку в семью** - Нажмите для подачи заявки в семью.",
+      "button": { "label": "Подать заявку", "emoji": "📘", "url": "https://discord.com/channels/1409295951671201855/1480066408246153256/1484239472580231180" }
+    },
+    {
+      "type": "section",
+      "text": "**Анкета участника** - обязательно заполните анкету участника для смены ника.",
+      "button": { "kind": "infoaudit", "label": "Заполнить анкету", "emoji": "📑"}
+    },
+
+    { "type": "separator" },
+
+    { "type": "heading", "text": "Перед получением доступа заполните анкету по кнопке выше" },
+    {
+      "type": "text",
+      "text": "**Форма ников:** `Ник на сервере | StaticID`\n**Пример:** `Sage | 87021`"
+    }
+  ],
+
+  "media": {
+    "url": "https://cdn.discordapp.com/attachments/1479249477746298953/1479258352738631721/welcome_image.png?ex=69ab6232&is=69aa10b2&hm=de4f2ad863c7ad56581682b64b728ca5ada99418b8a1e4955fc71e210d7d5591&"
+  }
+}

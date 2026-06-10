@@ -1,0 +1,1765 @@
+[2026-02-05 17:38:30,443] [INFO] ManceraBOT.modules.welcome: WelcomeView registered.
+[2026-02-05 17:41:19,919] [INFO] ManceraBOT.modules.welcome: WelcomeView registered.
+[2026-02-05 17:41:49,519] [INFO] ManceraBOT.modules.welcome: Sent welcome for kairs0559 (772931083548229693)
+[2026-02-05 17:44:35,043] [ERROR] ManceraBOT.modules.welcome: init error: WelcomeView.__init__() takes 1 positional argument but 2 were given
+[2026-02-05 17:44:43,826] [ERROR] ManceraBOT.modules.welcome: on_member_join error: WelcomeView.__init__() takes 1 positional argument but 2 were given
+[2026-02-05 17:44:59,366] [ERROR] ManceraBOT.modules.welcome: on_member_join error: WelcomeView.__init__() takes 1 positional argument but 2 were given
+[2026-02-05 17:46:16,920] [INFO] ManceraBOT.modules.welcome: WelcomeView registered.
+[2026-02-05 17:46:24,827] [INFO] ManceraBOT.modules.welcome: Sent welcome for kairs0559 (772931083548229693)
+[2026-02-05 17:51:26,348] [INFO] ManceraBOT.modules.welcome: WelcomeView registered (persistent).
+[2026-02-05 17:51:46,871] [INFO] ManceraBOT.modules.welcome: Sent welcome for kairs0559 (772931083548229693)
+[2026-02-05 17:52:57,519] [INFO] ManceraBOT.modules.welcome: WelcomeView registered (persistent).
+[2026-02-05 17:53:08,715] [INFO] ManceraBOT.modules.welcome: Sent welcome for kairs0559 (772931083548229693)
+[2026-02-05 17:58:00,972] [INFO] ManceraBOT.modules.welcome: WelcomeView registered (persistent).
+[2026-02-05 17:58:09,570] [INFO] ManceraBOT.modules.welcome: Sent welcome for kairs0559 (772931083548229693)
+[2026-02-05 17:58:38,636] [INFO] ManceraBOT.modules.welcome: WelcomeView registered (persistent).
+[2026-02-05 17:58:45,566] [INFO] ManceraBOT.modules.welcome: Sent welcome for kairs0559 (772931083548229693)
+[2026-02-05 17:59:09,676] [INFO] ManceraBOT.modules.welcome: WelcomeView registered (persistent).
+[2026-02-05 17:59:21,543] [INFO] ManceraBOT.modules.welcome: Sent welcome for kairs0559 (772931083548229693)
+[2026-02-05 18:11:19,149] [INFO] ManceraBOT.modules.welcome: WelcomeView registered (persistent).
+[2026-02-05 18:11:33,462] [INFO] ManceraBOT.modules.welcome: Sent markdown welcome for kairs0559 (772931083548229693)
+[2026-02-05 18:56:40,622] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kairs0559 (772931083548229693)
+[2026-02-06 09:37:31,509] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "D:\bots\ManceraBOT\ManceraBOT\modules\welcome\welcome.py", line 145, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mbala\AppData\Local\Programs\Python\Python311\Lib\site-packages\discord\client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mbala\AppData\Local\Programs\Python\Python311\Lib\site-packages\discord\http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-06 10:07:29,416] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "D:\bots\ManceraBOT\ManceraBOT\modules\welcome\welcome.py", line 145, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mbala\AppData\Local\Programs\Python\Python311\Lib\site-packages\discord\client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mbala\AppData\Local\Programs\Python\Python311\Lib\site-packages\discord\http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-06 12:53:31,217] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "D:\bots\ManceraBOT\ManceraBOT\modules\welcome\welcome.py", line 145, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mbala\AppData\Local\Programs\Python\Python311\Lib\site-packages\discord\client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mbala\AppData\Local\Programs\Python\Python311\Lib\site-packages\discord\http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-06 13:14:27,041] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "D:\bots\ManceraBOT\ManceraBOT\modules\welcome\welcome.py", line 145, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mbala\AppData\Local\Programs\Python\Python311\Lib\site-packages\discord\client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mbala\AppData\Local\Programs\Python\Python311\Lib\site-packages\discord\http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-06 13:54:40,988] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "D:\bots\ManceraBOT\ManceraBOT\modules\welcome\welcome.py", line 145, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mbala\AppData\Local\Programs\Python\Python311\Lib\site-packages\discord\client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mbala\AppData\Local\Programs\Python\Python311\Lib\site-packages\discord\http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-06 13:55:46,477] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "D:\bots\ManceraBOT\ManceraBOT\modules\welcome\welcome.py", line 145, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mbala\AppData\Local\Programs\Python\Python311\Lib\site-packages\discord\client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mbala\AppData\Local\Programs\Python\Python311\Lib\site-packages\discord\http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-06 13:55:59,444] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "D:\bots\ManceraBOT\ManceraBOT\modules\welcome\welcome.py", line 145, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mbala\AppData\Local\Programs\Python\Python311\Lib\site-packages\discord\client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mbala\AppData\Local\Programs\Python\Python311\Lib\site-packages\discord\http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-06 13:59:18,283] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kairs0559 (772931083548229693)
+[2026-02-06 14:57:03,246] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "D:\bots\ManceraBOT\ManceraBOT\modules\welcome\welcome.py", line 210, in on_member_join
+    channel_id = int(cfg["channel_id"])
+                 ^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: ''
+
+[2026-02-06 15:07:12,623] [INFO] ManceraBOT.modules.welcome: [leave] sent for kairs0559 (772931083548229693)
+[2026-02-06 15:07:17,889] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "D:\bots\ManceraBOT\ManceraBOT\modules\welcome\welcome.py", line 210, in on_member_join
+    channel_id = int(cfg["channel_id"])
+                 ^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: ''
+
+[2026-02-06 15:07:46,300] [INFO] ManceraBOT.modules.welcome: [leave] sent for kairs0559 (772931083548229693)
+[2026-02-06 15:07:50,076] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kairs0559 (772931083548229693)
+[2026-02-06 15:08:18,072] [INFO] ManceraBOT.modules.welcome: [welcome] sent for nazarabyalli_00504 (1140669278278918175)
+[2026-02-06 16:25:31,272] [INFO] ManceraBOT.modules.welcome: [leave] sent for artemiii111 (389039480750997505)
+[2026-02-07 00:23:46,992] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to kkrackenn (1304243826797318236): [1082655235157274686, 924692757174427743]
+[2026-02-07 00:23:47,620] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kkrackenn (1304243826797318236)
+[2026-02-07 00:24:10,976] [INFO] ManceraBOT.modules.welcome: [leave] sent for kkrackenn (1304243826797318236)
+[2026-02-07 00:30:27,052] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to kkrackenn (1304243826797318236): [1082655235157274686, 924692757174427743]
+[2026-02-07 00:30:27,578] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kkrackenn (1304243826797318236)
+[2026-02-07 00:30:36,031] [INFO] ManceraBOT.modules.welcome: [leave] sent for kkrackenn (1304243826797318236)
+[2026-02-07 00:30:47,660] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to kkrackenn (1304243826797318236): [1028058376917237860]
+[2026-02-07 00:30:48,184] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kkrackenn (1304243826797318236)
+[2026-02-07 00:30:54,839] [INFO] ManceraBOT.modules.welcome: [leave] sent for kkrackenn (1304243826797318236)
+[2026-02-07 11:15:40,854] [INFO] ManceraBOT.modules.welcome: [leave] sent for ledmyk (1046706022892445750)
+[2026-02-07 15:21:42,674] [INFO] ManceraBOT.modules.welcome: [leave] sent for legionovss (1008328961765429330)
+[2026-02-07 15:23:19,055] [INFO] ManceraBOT.modules.welcome: [leave] sent for yt_gyse (680363751265796106)
+[2026-02-07 15:24:04,347] [INFO] ManceraBOT.modules.welcome: [leave] sent for zloi_kolar_88513 (1428080937777893567)
+[2026-02-07 15:25:00,597] [INFO] ManceraBOT.modules.welcome: [leave] sent for makarka0993 (1457757952982384721)
+[2026-02-07 15:25:44,132] [INFO] ManceraBOT.modules.welcome: [leave] sent for nowhere7990 (363292373544861696)
+[2026-02-07 15:27:27,683] [INFO] ManceraBOT.modules.welcome: [leave] sent for dimokkk6947 (617790933605548062)
+[2026-02-07 15:27:52,799] [INFO] ManceraBOT.modules.welcome: [leave] sent for rustmylife. (776801228599590943)
+[2026-02-07 15:28:17,463] [INFO] ManceraBOT.modules.welcome: [leave] sent for qwizz1 (930910998766964747)
+[2026-02-07 15:28:58,512] [INFO] ManceraBOT.modules.welcome: [leave] sent for 1_svarshik_1 (1446520290493468804)
+[2026-02-07 15:29:27,591] [INFO] ManceraBOT.modules.welcome: [leave] sent for eterly29 (1432308576981876846)
+[2026-02-07 15:30:08,805] [INFO] ManceraBOT.modules.welcome: [leave] sent for mestny_89_20360 (1294044108347801601)
+[2026-02-07 15:30:29,309] [INFO] ManceraBOT.modules.welcome: [leave] sent for ccfg (982933152014143508)
+[2026-02-07 15:31:21,503] [INFO] ManceraBOT.modules.welcome: [leave] sent for nikitatoks21_75973 (1460031996595142921)
+[2026-02-07 15:48:33,986] [INFO] ManceraBOT.modules.welcome: [leave] sent for john_bad (384740976645898252)
+[2026-02-07 20:08:33,674] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 250, in on_member_join
+    await self._send_welcome(channel, member)
+  File "/home/container/modules/welcome/welcome.py", line 226, in _send_welcome
+    await channel.send(view=view)
+  File "/home/container/.local/lib/python3.11/site-packages/discord/abc.py", line 1703, in send
+    data = await state.http.send_message(channel.id, params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 767, in request
+    raise Forbidden(response, data)
+discord.errors.Forbidden: 403 Forbidden (error code: 50013): Missing Permissions
+
+[2026-02-07 20:08:53,148] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 270, in on_member_remove
+    await self._send_leave(channel, member)
+  File "/home/container/modules/welcome/welcome.py", line 232, in _send_leave
+    await channel.send(embed=embed)
+  File "/home/container/.local/lib/python3.11/site-packages/discord/abc.py", line 1703, in send
+    data = await state.http.send_message(channel.id, params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 767, in request
+    raise Forbidden(response, data)
+discord.errors.Forbidden: 403 Forbidden (error code: 50001): Missing Access
+
+[2026-02-07 20:09:02,530] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 250, in on_member_join
+    await self._send_welcome(channel, member)
+  File "/home/container/modules/welcome/welcome.py", line 226, in _send_welcome
+    await channel.send(view=view)
+  File "/home/container/.local/lib/python3.11/site-packages/discord/abc.py", line 1703, in send
+    data = await state.http.send_message(channel.id, params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 767, in request
+    raise Forbidden(response, data)
+discord.errors.Forbidden: 403 Forbidden (error code: 50013): Missing Permissions
+
+[2026-02-07 20:10:47,724] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 270, in on_member_remove
+    await self._send_leave(channel, member)
+  File "/home/container/modules/welcome/welcome.py", line 232, in _send_leave
+    await channel.send(embed=embed)
+  File "/home/container/.local/lib/python3.11/site-packages/discord/abc.py", line 1703, in send
+    data = await state.http.send_message(channel.id, params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 767, in request
+    raise Forbidden(response, data)
+discord.errors.Forbidden: 403 Forbidden (error code: 50001): Missing Access
+
+[2026-02-07 20:10:54,030] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 250, in on_member_join
+    await self._send_welcome(channel, member)
+  File "/home/container/modules/welcome/welcome.py", line 226, in _send_welcome
+    await channel.send(view=view)
+  File "/home/container/.local/lib/python3.11/site-packages/discord/abc.py", line 1703, in send
+    data = await state.http.send_message(channel.id, params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 767, in request
+    raise Forbidden(response, data)
+discord.errors.Forbidden: 403 Forbidden (error code: 50013): Missing Permissions
+
+[2026-02-07 20:14:53,674] [INFO] ManceraBOT.modules.welcome: [leave] sent for kairs0559 (772931083548229693)
+[2026-02-07 20:14:59,368] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kairs0559 (772931083548229693)
+[2026-02-07 20:17:50,111] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kairs0559 (772931083548229693)
+[2026-02-07 20:21:34,775] [INFO] ManceraBOT.modules.welcome: [leave] sent for kairs0559 (772931083548229693)
+[2026-02-07 20:21:43,173] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kairs0559 (772931083548229693)
+[2026-02-07 20:25:32,244] [INFO] ManceraBOT.modules.welcome: [leave] sent for kairs0559 (772931083548229693)
+[2026-02-07 20:25:35,552] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kairs0559 (772931083548229693)
+[2026-02-07 20:30:42,833] [INFO] ManceraBOT.modules.welcome: [leave] sent for kairs0559 (772931083548229693)
+[2026-02-07 20:30:45,220] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kairs0559 (772931083548229693)
+[2026-02-07 20:35:35,050] [INFO] ManceraBOT.modules.welcome: [leave] sent for kairs0559 (772931083548229693)
+[2026-02-07 20:35:37,239] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kairs0559 (772931083548229693)
+[2026-02-07 20:54:17,387] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to dimataranov (1198219050669572116): [1028058376917237860]
+[2026-02-07 20:54:18,095] [INFO] ManceraBOT.modules.welcome: [welcome] sent for dimataranov (1198219050669572116)
+[2026-02-07 20:59:33,425] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kairs0559 (772931083548229693)
+[2026-02-07 20:59:54,319] [INFO] ManceraBOT.modules.welcome: [leave] sent for kairs0559 (772931083548229693)
+[2026-02-07 20:59:58,593] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kairs0559 (772931083548229693)
+[2026-02-07 21:01:04,372] [INFO] ManceraBOT.modules.welcome: [leave] sent for kairs0559 (772931083548229693)
+[2026-02-07 21:01:06,833] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kairs0559 (772931083548229693)
+[2026-02-07 21:03:29,811] [INFO] ManceraBOT.modules.welcome: [welcome] sent for chupachupa88 (1442909882654396496)
+[2026-02-07 21:22:51,300] [INFO] ManceraBOT.modules.welcome: [leave] sent for kakein_0324 (631131358055628801)
+[2026-02-07 21:26:51,533] [INFO] ManceraBOT.modules.welcome: [leave] sent for tsedevr (789248586331586582)
+[2026-02-07 21:27:16,384] [INFO] ManceraBOT.modules.welcome: [welcome] sent for tsedevr (789248586331586582)
+[2026-02-07 21:44:31,812] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-07 21:57:33,795] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-07 21:57:36,210] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-07 22:24:06,682] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-07 22:29:47,426] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-07 23:37:07,970] [INFO] ManceraBOT.modules.welcome: [welcome] sent for Birthday Bot#5876 (656621136808902656)
+[2026-02-08 00:11:52,324] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to z_qqx (1118608967225065533): [1028058376917237860]
+[2026-02-08 00:11:52,789] [INFO] ManceraBOT.modules.welcome: [welcome] sent for z_qqx (1118608967225065533)
+[2026-02-08 10:03:04,018] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to zeneb_ed (1455113050372833484): [1028058376917237860]
+[2026-02-08 10:03:04,705] [INFO] ManceraBOT.modules.welcome: [welcome] sent for zeneb_ed (1455113050372833484)
+[2026-02-08 10:13:05,847] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-08 10:26:51,187] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-08 10:28:46,408] [INFO] ManceraBOT.modules.welcome: [leave] sent for sponge1op_44479 (1154784433275146311)
+[2026-02-08 10:28:49,505] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-08 10:38:05,984] [INFO] ManceraBOT.modules.welcome: [welcome] sent for bamiiup (541147092257865770)
+[2026-02-08 10:39:44,864] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-08 10:49:00,881] [INFO] ManceraBOT.modules.welcome: [leave] sent for bamiiup (541147092257865770)
+[2026-02-08 11:11:04,231] [INFO] ManceraBOT.modules.welcome: [welcome] sent for gofuu0317_49778 (1282670535444140144)
+[2026-02-08 12:43:21,963] [INFO] ManceraBOT.modules.welcome: [leave] sent for follow.me152 (757199258452754442)
+[2026-02-08 13:07:52,193] [INFO] ManceraBOT.modules.welcome: [leave] sent for bestbrus_ru9563 (1003232525155586132)
+[2026-02-08 14:13:35,435] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to Streamcord#2800 (375805687529209857): [1028058376917237860]
+[2026-02-08 14:13:35,873] [INFO] ManceraBOT.modules.welcome: [welcome] sent for Streamcord#2800 (375805687529209857)
+[2026-02-08 14:17:55,913] [INFO] ManceraBOT.modules.welcome: [leave] sent for absolute0_0 (563324887142498304)
+[2026-02-08 16:24:13,564] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to miacindy_cruz7166 (1279456942502187099): [1028058376917237860]
+[2026-02-08 16:24:14,202] [INFO] ManceraBOT.modules.welcome: [welcome] sent for miacindy_cruz7166 (1279456942502187099)
+[2026-02-08 16:24:16,782] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to andreadavid_meyer2808 (1279456937091530814): [1028058376917237860]
+[2026-02-08 16:24:17,262] [INFO] ManceraBOT.modules.welcome: [welcome] sent for andreadavid_meyer2808 (1279456937091530814)
+[2026-02-08 17:18:09,513] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-08 17:18:29,255] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-08 17:20:55,408] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-08 17:21:00,730] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-08 17:21:19,787] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-08 17:23:07,328] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-08 17:53:36,049] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-08 18:04:26,232] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-08 18:17:21,589] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-08 18:38:57,703] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-08 18:48:03,838] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to xyqds (1408396526383792433): [1028058376917237860]
+[2026-02-08 18:48:04,714] [INFO] ManceraBOT.modules.welcome: [welcome] sent for xyqds (1408396526383792433)
+[2026-02-08 19:00:50,024] [INFO] ManceraBOT.modules.welcome: [leave] sent for hzwkixkol_89650 (1186589630888411210)
+[2026-02-08 19:32:54,066] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-08 20:03:48,562] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to p43l (339448576533069827): [1028058376917237860]
+[2026-02-08 20:03:49,213] [INFO] ManceraBOT.modules.welcome: [welcome] sent for p43l (339448576533069827)
+[2026-02-08 20:09:29,201] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to rokrit (808752834069266462): [1028058376917237860]
+[2026-02-08 20:09:29,689] [INFO] ManceraBOT.modules.welcome: [welcome] sent for rokrit (808752834069266462)
+[2026-02-08 20:23:19,328] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to inzhir_inc (1349016320733351977): [1028058376917237860]
+[2026-02-08 20:23:19,766] [INFO] ManceraBOT.modules.welcome: [welcome] sent for inzhir_inc (1349016320733351977)
+[2026-02-08 21:56:45,902] [INFO] ManceraBOT.modules.welcome: [leave] sent for _bedolaga_ (513656967567245333)
+[2026-02-08 21:56:48,376] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-09 08:00:25,255] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to xxx.neon (1163474660588007424): [1028058376917237860]
+[2026-02-09 08:00:25,804] [INFO] ManceraBOT.modules.welcome: [welcome] sent for xxx.neon (1163474660588007424)
+[2026-02-09 08:17:51,940] [INFO] ManceraBOT.modules.welcome: [leave] sent for xxx.neon (1163474660588007424)
+[2026-02-09 08:39:02,963] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-09 08:39:33,318] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-09 11:35:44,328] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to .nobless (506743763008356352): [1028058376917237860]
+[2026-02-09 11:35:44,870] [INFO] ManceraBOT.modules.welcome: [welcome] sent for .nobless (506743763008356352)
+[2026-02-09 13:30:09,887] [INFO] ManceraBOT.modules.welcome: [leave] sent for weeeeeett_49589 (1266304231871348818)
+[2026-02-09 15:41:42,321] [INFO] ManceraBOT.modules.welcome: [leave] sent for wernosty (935671606917857302)
+[2026-02-09 15:41:43,796] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-09 15:41:45,658] [INFO] ManceraBOT.modules.welcome: [leave] sent for wernosty (935671606917857302)
+[2026-02-09 17:19:03,051] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to ialoyai (525541175763927052): [1028058376917237860]
+[2026-02-09 17:19:03,488] [INFO] ManceraBOT.modules.welcome: [welcome] sent for ialoyai (525541175763927052)
+[2026-02-09 17:40:54,547] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-09 17:41:02,631] [INFO] ManceraBOT.modules.welcome: [leave] sent for kwmyy (835560042845438042)
+[2026-02-09 17:44:34,352] [INFO] ManceraBOT.modules.welcome: [leave] sent for inzhir_inc (1349016320733351977)
+[2026-02-09 17:53:50,821] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-09 18:45:08,125] [INFO] ManceraBOT.modules.welcome: [welcome] sent for yacho3212 (642406613730459649)
+[2026-02-09 19:27:51,832] [INFO] ManceraBOT.modules.welcome: [welcome] sent for robbirobish (763454650073481227)
+[2026-02-09 20:09:06,841] [INFO] ManceraBOT.modules.welcome: [welcome] sent for audioterakt_27731 (1454528005312614450)
+[2026-02-09 20:14:37,013] [INFO] ManceraBOT.modules.welcome: [leave] sent for audioterakt_27731 (1454528005312614450)
+[2026-02-09 20:14:41,578] [INFO] ManceraBOT.modules.welcome: [welcome] sent for audioterakt_27731 (1454528005312614450)
+[2026-02-09 21:57:07,466] [INFO] ManceraBOT.modules.welcome: [leave] sent for lovingnote (972923245512757278)
+[2026-02-09 21:57:08,882] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-09 21:57:17,444] [INFO] ManceraBOT.modules.welcome: [leave] sent for lostlovelust (613293184025362463)
+[2026-02-09 21:57:18,951] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-10 07:04:27,122] [INFO] ManceraBOT.modules.welcome: [welcome] sent for gojo021761 (1456276435189764240)
+[2026-02-10 09:54:43,908] [INFO] ManceraBOT.modules.welcome: [leave] sent for ialoyai (525541175763927052)
+[2026-02-10 11:22:23,562] [INFO] ManceraBOT.modules.welcome: [welcome] sent for europenis (682950724489052170)
+[2026-02-10 13:22:49,002] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-10 13:24:43,368] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-10 13:49:48,712] [INFO] ManceraBOT.modules.welcome: [leave] sent for gojo021761 (1456276435189764240)
+[2026-02-10 15:38:40,434] [INFO] ManceraBOT.modules.welcome: [welcome] sent for nurs122 (1227727923012829217)
+[2026-02-10 16:50:02,432] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-10 16:55:50,773] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-10 17:30:29,769] [INFO] ManceraBOT.modules.welcome: [welcome] sent for trrble. (648235405975486532)
+[2026-02-10 17:44:09,259] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to bascheee (710157623319855106): [1028058376917237860]
+[2026-02-10 17:44:09,827] [INFO] ManceraBOT.modules.welcome: [welcome] sent for bascheee (710157623319855106)
+[2026-02-10 17:44:16,164] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to maksas68 (1327264767211212821): [1028058376917237860]
+[2026-02-10 17:44:16,540] [INFO] ManceraBOT.modules.welcome: [welcome] sent for maksas68 (1327264767211212821)
+[2026-02-10 17:52:41,490] [INFO] ManceraBOT.modules.welcome: [leave] sent for xyqds (1408396526383792433)
+[2026-02-10 17:55:40,070] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to gedyez (255307442039160833): [1028058376917237860]
+[2026-02-10 17:55:40,450] [INFO] ManceraBOT.modules.welcome: [welcome] sent for gedyez (255307442039160833)
+[2026-02-10 18:14:19,255] [INFO] ManceraBOT.modules.welcome: [leave] sent for milogost0x (1186698885519908884)
+[2026-02-10 18:51:02,755] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to dosh1rakk (536550265201885194): [1028058376917237860]
+[2026-02-10 18:51:03,201] [INFO] ManceraBOT.modules.welcome: [welcome] sent for dosh1rakk (536550265201885194)
+[2026-02-10 19:23:02,871] [INFO] ManceraBOT.modules.welcome: [leave] sent for nurs122 (1227727923012829217)
+[2026-02-10 19:29:00,130] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-10 19:36:24,617] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-10 21:12:29,371] [INFO] ManceraBOT.modules.welcome: [leave] sent for shashlychok0190 (797068815623258132)
+[2026-02-10 21:12:31,046] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-10 21:39:41,194] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-10 21:39:42,421] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-10 21:39:54,965] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-11 05:06:17,876] [INFO] ManceraBOT.modules.welcome: [leave] sent for mumizxx. (1299761018171429047)
+[2026-02-11 08:12:33,788] [INFO] ManceraBOT.modules.welcome: [welcome] sent for mrdumerr (1423281890483245059)
+[2026-02-11 11:13:34,979] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to ayamor1 (1433798858252488716): [1028058376917237860]
+[2026-02-11 11:13:35,583] [INFO] ManceraBOT.modules.welcome: [welcome] sent for ayamor1 (1433798858252488716)
+[2026-02-11 12:49:04,980] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to yahila. (491913180378038282): [1028058376917237860]
+[2026-02-11 12:49:05,410] [INFO] ManceraBOT.modules.welcome: [welcome] sent for yahila. (491913180378038282)
+[2026-02-11 12:51:19,990] [INFO] ManceraBOT.modules.welcome: [leave] sent for yahila. (491913180378038282)
+[2026-02-11 13:17:31,182] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to jiji110 (987326008535433216): [1028058376917237860]
+[2026-02-11 13:17:31,818] [INFO] ManceraBOT.modules.welcome: [welcome] sent for jiji110 (987326008535433216)
+[2026-02-11 13:35:31,882] [INFO] ManceraBOT.modules.welcome: [leave] sent for mrdumerr (1423281890483245059)
+[2026-02-11 15:05:52,680] [INFO] ManceraBOT.modules.welcome: [leave] sent for yacho3212 (642406613730459649)
+[2026-02-11 16:40:09,483] [INFO] ManceraBOT.modules.welcome: [leave] sent for z_qqx (1118608967225065533)
+[2026-02-11 19:30:05,486] [INFO] ManceraBOT.modules.welcome: [leave] sent for boom_08512 (552486658424045589)
+[2026-02-11 19:37:23,656] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-11 19:38:57,756] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-11 21:40:19,443] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to zxcgenius5743 (356015484984098819): [1028058376917237860]
+[2026-02-11 21:40:20,042] [INFO] ManceraBOT.modules.welcome: [welcome] sent for zxcgenius5743 (356015484984098819)
+[2026-02-11 23:13:44,761] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to georg199 (238281715406077954): [1028058376917237860]
+[2026-02-11 23:13:45,395] [INFO] ManceraBOT.modules.welcome: [welcome] sent for georg199 (238281715406077954)
+[2026-02-12 08:46:54,603] [INFO] ManceraBOT.modules.welcome: [leave] sent for gofuu0317_49778 (1282670535444140144)
+[2026-02-12 10:04:54,161] [INFO] ManceraBOT.modules.welcome: [leave] sent for europenis (682950724489052170)
+[2026-02-12 10:08:19,515] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to gofuu0317_49778 (1282670535444140144): [1028058376917237860]
+[2026-02-12 10:08:20,597] [INFO] ManceraBOT.modules.welcome: [welcome] sent for gofuu0317_49778 (1282670535444140144)
+[2026-02-12 10:13:25,884] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to europenis (682950724489052170): [1028058376917237860]
+[2026-02-12 10:13:26,422] [INFO] ManceraBOT.modules.welcome: [welcome] sent for europenis (682950724489052170)
+[2026-02-12 10:36:58,735] [INFO] ManceraBOT.modules.welcome: [leave] sent for viktor3722 (597799046530465854)
+[2026-02-12 10:37:22,868] [INFO] ManceraBOT.modules.welcome: [leave] sent for kairs0559 (772931083548229693)
+[2026-02-12 10:37:46,890] [INFO] ManceraBOT.modules.welcome: [leave] sent for migsglkhzbkzmhiaejypo (814166545918853161)
+[2026-02-12 11:16:02,890] [INFO] ManceraBOT.modules.welcome: [leave] sent for adolfzho_ (436590349876461578)
+[2026-02-12 12:35:44,906] [INFO] ManceraBOT.modules.welcome: [leave] sent for masyanias (487980893290496000)
+[2026-02-12 12:35:47,654] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-12 13:08:20,111] [INFO] ManceraBOT.modules.welcome: [leave] sent for minirale111_28899 (1380171099521683547)
+[2026-02-12 13:08:31,446] [INFO] ManceraBOT.modules.welcome: [leave] sent for kasumi4874 (602794672787816469)
+[2026-02-12 13:43:33,860] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-12 16:20:13,476] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-12 16:24:18,168] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-12 19:27:12,210] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to krls.exe (697901431910432848): [1028058376917237860]
+[2026-02-12 19:27:12,582] [INFO] ManceraBOT.modules.welcome: [welcome] sent for krls.exe (697901431910432848)
+[2026-02-12 19:31:14,518] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-12 19:33:50,141] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-13 02:32:36,093] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-13 03:56:20,645] [INFO] ManceraBOT.modules.welcome: [welcome] sent for gambit01718 (912982392724131880)
+[2026-02-13 04:11:12,048] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-13 08:08:22,123] [INFO] ManceraBOT.modules.welcome: [welcome] sent for monster6422 (1205024962533003269)
+[2026-02-13 14:57:12,387] [INFO] ManceraBOT.modules.welcome: [leave] sent for maksas68 (1327264767211212821)
+[2026-02-13 17:41:45,493] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to amooreloveee (1078771584061427752): [1028058376917237860]
+[2026-02-13 17:41:46,446] [INFO] ManceraBOT.modules.welcome: [welcome] sent for amooreloveee (1078771584061427752)
+[2026-02-13 18:07:41,003] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to dallacrisss (1464611666334454054): [1028058376917237860]
+[2026-02-13 18:07:41,530] [INFO] ManceraBOT.modules.welcome: [welcome] sent for dallacrisss (1464611666334454054)
+[2026-02-13 18:11:28,849] [INFO] ManceraBOT.modules.welcome: [leave] sent for dallacrisss (1464611666334454054)
+[2026-02-13 18:16:52,857] [INFO] ManceraBOT.modules.welcome: [leave] sent for amooreloveee (1078771584061427752)
+[2026-02-13 18:20:13,808] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to loveanimation (927871605164613652): [1028058376917237860]
+[2026-02-13 18:20:14,141] [INFO] ManceraBOT.modules.welcome: [welcome] sent for loveanimation (927871605164613652)
+[2026-02-13 18:45:06,352] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to ar1em752 (544565849470533643): [1028058376917237860]
+[2026-02-13 18:45:06,742] [INFO] ManceraBOT.modules.welcome: [welcome] sent for ar1em752 (544565849470533643)
+[2026-02-13 19:12:18,999] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to yebananana_62535 (1337814899929124864): [1028058376917237860]
+[2026-02-13 19:12:20,001] [INFO] ManceraBOT.modules.welcome: [welcome] sent for yebananana_62535 (1337814899929124864)
+[2026-02-13 19:38:15,347] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-13 19:38:48,058] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-13 20:26:33,502] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to akatsukixr6 (722481859426123808): [1028058376917237860]
+[2026-02-13 20:26:34,102] [INFO] ManceraBOT.modules.welcome: [welcome] sent for akatsukixr6 (722481859426123808)
+[2026-02-13 22:10:22,301] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to sm1shle (315194600144764939): [1028058376917237860]
+[2026-02-13 22:10:23,160] [INFO] ManceraBOT.modules.welcome: [welcome] sent for sm1shle (315194600144764939)
+[2026-02-13 22:40:41,567] [INFO] ManceraBOT.modules.welcome: [leave] sent for alomon. (851904548909744171)
+[2026-02-13 22:40:49,339] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-13 23:14:02,810] [INFO] ManceraBOT.modules.welcome: [welcome] sent for dr_evil1 (469001513176399873)
+[2026-02-14 00:14:07,022] [INFO] ManceraBOT.modules.welcome: [welcome] sent for paveldurovfeik (1447761349462458439)
+[2026-02-14 04:23:09,962] [INFO] ManceraBOT.modules.welcome: [leave] sent for rekomp (492652163823042560)
+[2026-02-14 04:23:16,049] [INFO] ManceraBOT.modules.welcome: [leave] sent for la1im (1459678828430495893)
+[2026-02-14 04:23:21,853] [INFO] ManceraBOT.modules.welcome: [leave] sent for yourthoughts (1381358542111379457)
+[2026-02-14 04:23:28,041] [INFO] ManceraBOT.modules.welcome: [leave] sent for winston_hunt7687 (759813614827470861)
+[2026-02-14 04:23:32,998] [INFO] ManceraBOT.modules.welcome: [leave] sent for .bopb3akohe (815961763195387944)
+[2026-02-14 11:37:25,172] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to rekomp (492652163823042560): [1028058376917237860]
+[2026-02-14 11:37:25,746] [INFO] ManceraBOT.modules.welcome: [welcome] sent for rekomp (492652163823042560)
+[2026-02-14 12:55:17,522] [INFO] ManceraBOT.modules.welcome: [leave] sent for ar1em752 (544565849470533643)
+[2026-02-14 15:57:52,821] [INFO] ManceraBOT.modules.welcome: [leave] sent for m1noxxxx (714404192466370630)
+[2026-02-14 17:12:38,656] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to luvs0803_17106 (1462562388229361805): [1028058376917237860]
+[2026-02-14 17:12:39,045] [INFO] ManceraBOT.modules.welcome: [welcome] sent for luvs0803_17106 (1462562388229361805)
+[2026-02-14 17:26:43,066] [INFO] ManceraBOT.modules.welcome: [leave] sent for love_you_0._12775 (1327983849908604953)
+[2026-02-14 18:23:02,508] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-14 19:47:27,014] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-14 19:47:37,233] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-14 19:47:48,533] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-14 20:04:22,526] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to dellx777 (801858951889158174): [1028058376917237860]
+[2026-02-14 20:04:23,024] [INFO] ManceraBOT.modules.welcome: [welcome] sent for dellx777 (801858951889158174)
+[2026-02-14 20:34:25,667] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to avgan_ (895719835751829514): [1028058376917237860]
+[2026-02-14 20:34:26,128] [INFO] ManceraBOT.modules.welcome: [welcome] sent for avgan_ (895719835751829514)
+[2026-02-14 21:10:01,787] [INFO] ManceraBOT.modules.welcome: [welcome] sent for cbuger_ (987741282753458247)
+[2026-02-14 22:54:41,835] [INFO] ManceraBOT.modules.welcome: [welcome] sent for crow9419 (481734479799648266)
+[2026-02-14 23:23:14,123] [INFO] ManceraBOT.modules.welcome: [welcome] sent for love_you_0._12775 (1327983849908604953)
+[2026-02-15 01:13:43,572] [INFO] ManceraBOT.modules.welcome: [leave] sent for menuasterr (1127961995732328488)
+[2026-02-15 03:56:49,514] [INFO] ManceraBOT.modules.welcome: [leave] sent for kairs0559 (772931083548229693)
+[2026-02-15 04:28:00,939] [INFO] ManceraBOT.modules.welcome: [leave] sent for gofuu0317_49778 (1282670535444140144)
+[2026-02-15 04:28:09,337] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-15 07:41:23,689] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to gera3446 (1089868216106504194): [1028058376917237860]
+[2026-02-15 07:41:24,260] [INFO] ManceraBOT.modules.welcome: [welcome] sent for gera3446 (1089868216106504194)
+[2026-02-15 09:14:21,544] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to 035662 (321160225350615040): [1028058376917237860]
+[2026-02-15 09:14:22,343] [INFO] ManceraBOT.modules.welcome: [welcome] sent for 035662 (321160225350615040)
+[2026-02-15 10:20:26,738] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to vladimir44v (1388977206503673918): [1028058376917237860]
+[2026-02-15 10:20:27,153] [INFO] ManceraBOT.modules.welcome: [welcome] sent for vladimir44v (1388977206503673918)
+[2026-02-15 12:08:10,364] [INFO] ManceraBOT.modules.welcome: [leave] sent for vezunchik0608 (956159674284138517)
+[2026-02-15 12:18:07,715] [INFO] ManceraBOT.modules.welcome: [leave] sent for jiji110 (987326008535433216)
+[2026-02-15 12:45:31,385] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to _theavears (1046179078937518110): [1028058376917237860]
+[2026-02-15 12:45:31,860] [INFO] ManceraBOT.modules.welcome: [welcome] sent for _theavears (1046179078937518110)
+[2026-02-15 16:20:51,500] [INFO] ManceraBOT.modules.welcome: [leave] sent for skwrt1 (1389629218245050492)
+[2026-02-15 17:36:33,485] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-15 20:54:43,409] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to maks_prosed (709820796318515252): [1028058376917237860]
+[2026-02-15 20:54:43,944] [INFO] ManceraBOT.modules.welcome: [welcome] sent for maks_prosed (709820796318515252)
+[2026-02-16 07:40:37,116] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to meepolin (1145392589718175834): [1028058376917237860]
+[2026-02-16 07:40:37,660] [INFO] ManceraBOT.modules.welcome: [welcome] sent for meepolin (1145392589718175834)
+[2026-02-16 07:44:37,771] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to kam1k8826 (587116635978989569): [1028058376917237860]
+[2026-02-16 07:44:38,208] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kam1k8826 (587116635978989569)
+[2026-02-16 10:47:17,157] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-16 13:16:11,588] [INFO] ManceraBOT.modules.welcome: [leave] sent for izva_azii (508709820820488202)
+[2026-02-16 13:25:51,835] [INFO] ManceraBOT.modules.welcome: [leave] sent for maonicofficiall (1001099119688941600)
+[2026-02-16 13:30:42,883] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-16 14:08:16,086] [INFO] ManceraBOT.modules.welcome: [welcome] sent for walter100998 (1426247651564851200)
+[2026-02-16 14:29:04,869] [INFO] ManceraBOT.modules.welcome: [welcome] sent for roomanceplanet__89198 (1462793195695112225)
+[2026-02-16 15:05:14,095] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to mastre9444 (861311553278443546): [1028058376917237860]
+[2026-02-16 15:05:14,677] [INFO] ManceraBOT.modules.welcome: [welcome] sent for mastre9444 (861311553278443546)
+[2026-02-16 15:13:37,249] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to brbyxx (1006944014374809651): [1028058376917237860]
+[2026-02-16 15:13:37,584] [INFO] ManceraBOT.modules.welcome: [welcome] sent for brbyxx (1006944014374809651)
+[2026-02-16 15:38:39,220] [INFO] ManceraBOT.modules.welcome: [leave] sent for eee_shak (889120107673051196)
+[2026-02-16 15:38:41,657] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-16 16:03:02,888] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to artemkabloo (687733018789675013): [1028058376917237860]
+[2026-02-16 16:03:03,275] [INFO] ManceraBOT.modules.welcome: [welcome] sent for artemkabloo (687733018789675013)
+[2026-02-16 16:06:28,969] [INFO] ManceraBOT.modules.welcome: [welcome] sent for prosto.zxc (777921004943966258)
+[2026-02-16 16:35:53,845] [INFO] ManceraBOT.modules.welcome: [leave] sent for zxcmartich (458315339625660427)
+[2026-02-16 16:49:14,120] [INFO] ManceraBOT.modules.welcome: [welcome] sent for .dava (365852167615152129)
+[2026-02-16 18:00:19,581] [INFO] ManceraBOT.modules.welcome: [leave] sent for shkilakitsume (904296730231730176)
+[2026-02-16 18:31:23,888] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to trustexs (953226209314082846): [1028058376917237860]
+[2026-02-16 18:31:24,329] [INFO] ManceraBOT.modules.welcome: [welcome] sent for trustexs (953226209314082846)
+[2026-02-16 19:03:34,868] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to nikset (269115300882939916): [1028058376917237860]
+[2026-02-16 19:03:35,521] [INFO] ManceraBOT.modules.welcome: [welcome] sent for nikset (269115300882939916)
+[2026-02-16 19:09:38,095] [INFO] ManceraBOT.modules.welcome: [leave] sent for nikset (269115300882939916)
+[2026-02-16 19:40:42,277] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to muffinever (1015962618663534662): [1028058376917237860]
+[2026-02-16 19:40:42,706] [INFO] ManceraBOT.modules.welcome: [welcome] sent for muffinever (1015962618663534662)
+[2026-02-16 21:58:25,406] [INFO] ManceraBOT.modules.welcome: [leave] sent for walter100998 (1426247651564851200)
+[2026-02-16 22:04:26,822] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to lesbianizmgood (1174120307083182161): [1028058376917237860]
+[2026-02-16 22:04:27,395] [INFO] ManceraBOT.modules.welcome: [welcome] sent for lesbianizmgood (1174120307083182161)
+[2026-02-16 22:19:57,424] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to syr3ks (714847245039697922): [1028058376917237860]
+[2026-02-16 22:19:58,024] [INFO] ManceraBOT.modules.welcome: [welcome] sent for syr3ks (714847245039697922)
+[2026-02-17 00:39:37,471] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to konoyouna (334733452933070858): [1028058376917237860]
+[2026-02-17 00:39:37,918] [INFO] ManceraBOT.modules.welcome: [welcome] sent for konoyouna (334733452933070858)
+[2026-02-17 06:49:35,835] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-17 06:50:04,663] [INFO] ManceraBOT.modules.welcome: [welcome] sent for bray9713 (909048958054178837)
+[2026-02-17 12:03:59,395] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to xbsnwlxocj (1055572874016071710): [1028058376917237860]
+[2026-02-17 12:03:59,974] [INFO] ManceraBOT.modules.welcome: [welcome] sent for xbsnwlxocj (1055572874016071710)
+[2026-02-17 13:29:53,590] [INFO] ManceraBOT.modules.welcome: [welcome] sent for sana39852 (1109492735938920488)
+[2026-02-17 14:09:08,501] [INFO] ManceraBOT.modules.welcome: [leave] sent for luvs0803_17106 (1462562388229361805)
+[2026-02-17 14:10:50,388] [INFO] ManceraBOT.modules.welcome: [leave] sent for itraze (1194037636537524345)
+[2026-02-17 14:10:53,553] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-17 15:43:35,246] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-17 15:44:41,113] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-17 15:45:07,102] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-17 15:48:26,684] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-17 15:53:59,760] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-17 16:02:33,042] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-17 16:13:16,783] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-17 17:04:15,627] [INFO] ManceraBOT.modules.welcome: [leave] sent for chupachupa88 (1442909882654396496)
+[2026-02-17 17:04:18,709] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-17 17:40:17,235] [INFO] ManceraBOT.modules.welcome: [leave] sent for 52gerc. (449640892639215617)
+[2026-02-17 18:59:18,693] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to andreyivanovich9801 (408219999640223744): [1028058376917237860]
+[2026-02-17 18:59:19,108] [INFO] ManceraBOT.modules.welcome: [welcome] sent for andreyivanovich9801 (408219999640223744)
+[2026-02-17 19:21:26,927] [INFO] ManceraBOT.modules.welcome: [leave] sent for vladimir44v (1388977206503673918)
+[2026-02-17 19:21:34,682] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-17 19:24:01,047] [INFO] ManceraBOT.modules.welcome: [leave] sent for muffinever (1015962618663534662)
+[2026-02-17 20:32:02,731] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to rostishka2182 (1303362251771744400): [1028058376917237860]
+[2026-02-17 20:32:03,454] [INFO] ManceraBOT.modules.welcome: [welcome] sent for rostishka2182 (1303362251771744400)
+[2026-02-17 20:42:02,120] [INFO] ManceraBOT.modules.welcome: [welcome] sent for khaelyxxx (1430286597965877340)
+[2026-02-17 21:31:32,783] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to wqko1z (424478466520383500): [1028058376917237860]
+[2026-02-17 21:31:33,234] [INFO] ManceraBOT.modules.welcome: [welcome] sent for wqko1z (424478466520383500)
+[2026-02-17 21:31:34,920] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to rama_dva_vandama0078 (1413238937694240799): [1028058376917237860]
+[2026-02-17 21:31:35,336] [INFO] ManceraBOT.modules.welcome: [welcome] sent for rama_dva_vandama0078 (1413238937694240799)
+[2026-02-17 22:11:53,448] [INFO] ManceraBOT.modules.welcome: [leave] sent for mm1gas (609755494411796511)
+[2026-02-17 23:11:54,385] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to mm1gas (609755494411796511): [1028058376917237860]
+[2026-02-17 23:11:54,941] [INFO] ManceraBOT.modules.welcome: [welcome] sent for mm1gas (609755494411796511)
+[2026-02-18 04:53:21,888] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to .razoooor (587639158630252554): [1028058376917237860]
+[2026-02-18 04:53:22,517] [INFO] ManceraBOT.modules.welcome: [welcome] sent for .razoooor (587639158630252554)
+[2026-02-18 09:31:56,319] [INFO] ManceraBOT.modules.welcome: [leave] sent for rama_dva_vandama0078 (1413238937694240799)
+[2026-02-18 10:48:42,232] [INFO] ManceraBOT.modules.welcome: [welcome] sent for maksim088910 (1222730498443317440)
+[2026-02-18 11:29:50,796] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to rama_dva_vandama0078 (1413238937694240799): [1028058376917237860]
+[2026-02-18 11:29:51,176] [INFO] ManceraBOT.modules.welcome: [welcome] sent for rama_dva_vandama0078 (1413238937694240799)
+[2026-02-18 12:12:10,828] [INFO] ManceraBOT.modules.welcome: [leave] sent for loveanimation (927871605164613652)
+[2026-02-18 12:57:01,921] [INFO] ManceraBOT.modules.welcome: [leave] sent for radion7565 (680741611113545783)
+[2026-02-18 12:58:24,869] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-18 13:04:10,235] [INFO] ManceraBOT.modules.welcome: [leave] sent for fckingpsichokid (498835405316030464)
+[2026-02-18 13:04:12,922] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-18 14:02:59,146] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to radion7565 (680741611113545783): [1028058376917237860]
+[2026-02-18 14:02:59,532] [INFO] ManceraBOT.modules.welcome: [welcome] sent for radion7565 (680741611113545783)
+[2026-02-18 15:09:01,218] [INFO] ManceraBOT.modules.welcome: [leave] sent for dosh1rakk (536550265201885194)
+[2026-02-18 15:09:02,836] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-18 15:15:47,398] [INFO] ManceraBOT.modules.welcome: [leave] sent for xbsnwlxocj (1055572874016071710)
+[2026-02-18 15:21:06,688] [INFO] ManceraBOT.modules.welcome: [leave] sent for batya_skill (529407102729584660)
+[2026-02-18 15:51:10,126] [INFO] ManceraBOT.modules.welcome: [leave] sent for bububul (828289116566716416)
+[2026-02-18 16:20:03,102] [INFO] ManceraBOT.modules.welcome: [welcome] sent for ingvik (261552835068428288)
+[2026-02-18 16:26:08,602] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to onlygr4ve (808320614745243678): [1028058376917237860]
+[2026-02-18 16:26:09,211] [INFO] ManceraBOT.modules.welcome: [welcome] sent for onlygr4ve (808320614745243678)
+[2026-02-18 16:56:16,585] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-18 16:57:00,070] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-18 17:22:13,163] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-18 17:45:43,642] [INFO] ManceraBOT.modules.welcome: [welcome] sent for 52gerc. (449640892639215617)
+[2026-02-18 18:12:40,226] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to iceeeyess (763415726832484390): [1028058376917237860]
+[2026-02-18 18:12:40,950] [INFO] ManceraBOT.modules.welcome: [welcome] sent for iceeeyess (763415726832484390)
+[2026-02-18 18:14:46,030] [INFO] ManceraBOT.modules.welcome: [leave] sent for iceeeyess (763415726832484390)
+[2026-02-18 18:21:13,031] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to xannytrip (407123183481913355): [1028058376917237860]
+[2026-02-18 18:21:13,410] [INFO] ManceraBOT.modules.welcome: [welcome] sent for xannytrip (407123183481913355)
+[2026-02-18 18:34:18,493] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-19 07:39:02,812] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to molnarofficialstroy (1259527903654187138): [1028058376917237860]
+[2026-02-19 07:39:03,329] [INFO] ManceraBOT.modules.welcome: [welcome] sent for molnarofficialstroy (1259527903654187138)
+[2026-02-19 13:45:12,601] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-19 13:45:14,948] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-19 15:31:06,894] [INFO] ManceraBOT.modules.welcome: [leave] sent for zeneb_ed (1455113050372833484)
+[2026-02-19 16:49:41,497] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to soezka (1117805222690042017): [1028058376917237860]
+[2026-02-19 16:49:42,198] [INFO] ManceraBOT.modules.welcome: [welcome] sent for soezka (1117805222690042017)
+[2026-02-19 16:50:32,064] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to veoxsta (1023566905405095987): [1028058376917237860]
+[2026-02-19 16:50:32,707] [INFO] ManceraBOT.modules.welcome: [welcome] sent for veoxsta (1023566905405095987)
+[2026-02-19 18:05:04,811] [INFO] ManceraBOT.modules.welcome: [welcome] sent for z_qqx (1118608967225065533)
+[2026-02-19 18:33:33,253] [INFO] ManceraBOT.modules.welcome: [leave] sent for _theavears (1046179078937518110)
+[2026-02-19 19:41:37,418] [INFO] ManceraBOT.modules.welcome: [leave] sent for riddlejon (961332983309152347)
+[2026-02-19 19:41:43,604] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-19 19:53:24,196] [INFO] ManceraBOT.modules.welcome: [welcome] sent for zyydeq99 (1295323704485744680)
+[2026-02-19 19:54:23,694] [INFO] ManceraBOT.modules.welcome: [welcome] sent for nardin7314 (432235086868643842)
+[2026-02-19 20:43:03,346] [INFO] ManceraBOT.modules.welcome: [welcome] sent for masia1355 (758181798709952532)
+[2026-02-19 21:09:59,328] [INFO] ManceraBOT.modules.welcome: [leave] sent for kostyarovn0 (1246899474815516884)
+[2026-02-19 21:17:33,798] [INFO] ManceraBOT.modules.welcome: [leave] sent for 8800088 (420132023651532800)
+[2026-02-19 21:17:54,516] [INFO] ManceraBOT.modules.welcome: [leave] sent for oleg_skaleto. (616668376428838923)
+[2026-02-19 21:18:12,447] [INFO] ManceraBOT.modules.welcome: [leave] sent for samurai076595 (942462380665876490)
+[2026-02-19 21:18:47,828] [INFO] ManceraBOT.modules.welcome: [leave] sent for ealegends_18022 (1465792774153572595)
+[2026-02-19 21:19:01,871] [INFO] ManceraBOT.modules.welcome: [leave] sent for fdh3245_21603 (1448311957542408307)
+[2026-02-19 21:19:16,337] [INFO] ManceraBOT.modules.welcome: [leave] sent for dimataranov (1198219050669572116)
+[2026-02-19 23:39:48,556] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to zakhar009363 (966016285555187792): [1028058376917237860]
+[2026-02-19 23:39:49,388] [INFO] ManceraBOT.modules.welcome: [welcome] sent for zakhar009363 (966016285555187792)
+[2026-02-20 01:17:31,804] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to v1tap (543120264544780295): [1028058376917237860]
+[2026-02-20 01:17:32,704] [INFO] ManceraBOT.modules.welcome: [welcome] sent for v1tap (543120264544780295)
+[2026-02-20 02:24:55,735] [INFO] ManceraBOT.modules.welcome: [leave] sent for wqko1z (424478466520383500)
+[2026-02-20 03:14:34,253] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to littlexqm (824286988978749451): [1028058376917237860]
+[2026-02-20 03:14:34,813] [INFO] ManceraBOT.modules.welcome: [welcome] sent for littlexqm (824286988978749451)
+[2026-02-20 03:42:19,802] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to kairs0559 (772931083548229693): [1028058376917237860]
+[2026-02-20 03:42:21,546] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kairs0559 (772931083548229693)
+[2026-02-20 04:01:01,252] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to ziveee (953823058341265438): [1028058376917237860]
+[2026-02-20 04:01:01,711] [INFO] ManceraBOT.modules.welcome: [welcome] sent for ziveee (953823058341265438)
+[2026-02-20 04:01:06,828] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to dozasacred (1225523304949874759): [1028058376917237860]
+[2026-02-20 04:01:07,120] [INFO] ManceraBOT.modules.welcome: [welcome] sent for dozasacred (1225523304949874759)
+[2026-02-20 04:28:38,558] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to tomm1kkkk (813549647049523240): [1028058376917237860]
+[2026-02-20 04:28:38,996] [INFO] ManceraBOT.modules.welcome: [welcome] sent for tomm1kkkk (813549647049523240)
+[2026-02-20 04:54:54,431] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to zxcbaby (593045178667761665): [1028058376917237860]
+[2026-02-20 04:54:54,883] [INFO] ManceraBOT.modules.welcome: [welcome] sent for zxcbaby (593045178667761665)
+[2026-02-20 06:00:02,663] [INFO] ManceraBOT.modules.welcome: [leave] sent for zxcbaby (593045178667761665)
+[2026-02-20 07:14:45,650] [INFO] ManceraBOT.modules.welcome: [welcome] sent for loveqqs (1117850019341549679)
+[2026-02-20 07:15:02,023] [INFO] ManceraBOT.modules.welcome: [welcome] sent for sotov0027 (661248212786479134)
+[2026-02-20 08:32:32,228] [INFO] ManceraBOT.modules.welcome: [welcome] sent for .fox23 (482448466065227776)
+[2026-02-20 08:47:47,796] [INFO] ManceraBOT.modules.welcome: [leave] sent for rama_dva_vandama0078 (1413238937694240799)
+[2026-02-20 08:49:21,993] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-20 10:51:03,074] [INFO] ManceraBOT.modules.welcome: [welcome] sent for mr_demon1488 (1362448056527753259)
+[2026-02-20 10:51:20,440] [INFO] ManceraBOT.modules.welcome: [leave] sent for mr_demon1488 (1362448056527753259)
+[2026-02-20 11:04:51,901] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to typodom (340805900988055552): [1028058376917237860]
+[2026-02-20 11:04:52,413] [INFO] ManceraBOT.modules.welcome: [welcome] sent for typodom (340805900988055552)
+[2026-02-20 11:21:28,557] [INFO] ManceraBOT.modules.welcome: [welcome] sent for friz777 (892116701515247646)
+[2026-02-20 11:27:47,881] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to rama_dva_vandama0078 (1413238937694240799): [1028058376917237860]
+[2026-02-20 11:27:48,422] [INFO] ManceraBOT.modules.welcome: [welcome] sent for rama_dva_vandama0078 (1413238937694240799)
+[2026-02-20 11:30:00,936] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to wqko1z (424478466520383500): [1028058376917237860]
+[2026-02-20 11:30:01,538] [INFO] ManceraBOT.modules.welcome: [welcome] sent for wqko1z (424478466520383500)
+[2026-02-20 12:38:22,027] [INFO] ManceraBOT.modules.welcome: [leave] sent for nika1239 (431280445355982858)
+[2026-02-20 13:29:59,817] [INFO] ManceraBOT.modules.welcome: [welcome] sent for rusi1iik (1088129413201281045)
+[2026-02-20 14:22:11,577] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to smyrfik (418273496230264832): [1028058376917237860]
+[2026-02-20 14:22:12,113] [INFO] ManceraBOT.modules.welcome: [welcome] sent for smyrfik (418273496230264832)
+[2026-02-20 16:55:32,669] [INFO] ManceraBOT.modules.welcome: [leave] sent for ayamor1 (1433798858252488716)
+[2026-02-20 16:56:41,062] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-20 19:07:08,476] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to ayamor1 (1433798858252488716): [1028058376917237860]
+[2026-02-20 19:07:09,478] [INFO] ManceraBOT.modules.welcome: [welcome] sent for ayamor1 (1433798858252488716)
+[2026-02-20 19:53:53,343] [INFO] ManceraBOT.modules.welcome: [leave] sent for blackmolla126 (1451974158115279029)
+[2026-02-20 20:29:16,859] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-20 20:45:02,713] [INFO] ManceraBOT.modules.welcome: [leave] sent for z_qqx (1118608967225065533)
+[2026-02-20 22:21:57,558] [INFO] ManceraBOT.modules.welcome: [leave] sent for sotov0027 (661248212786479134)
+[2026-02-20 23:40:40,598] [INFO] ManceraBOT.modules.welcome: [leave] sent for onlygr4ve (808320614745243678)
+[2026-02-21 05:28:07,959] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to ctraxich (1263866192146202676): [1028058376917237860]
+[2026-02-21 05:28:08,743] [INFO] ManceraBOT.modules.welcome: [welcome] sent for ctraxich (1263866192146202676)
+[2026-02-21 05:50:21,232] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to mixa021270 (1474635431910838503): [1028058376917237860]
+[2026-02-21 05:50:21,907] [INFO] ManceraBOT.modules.welcome: [welcome] sent for mixa021270 (1474635431910838503)
+[2026-02-21 05:55:49,837] [INFO] ManceraBOT.modules.welcome: [leave] sent for 7zas1738 (949959163113529354)
+[2026-02-21 07:50:07,497] [INFO] ManceraBOT.modules.welcome: [leave] sent for zxcsft (1209911417919115264)
+[2026-02-21 09:12:47,191] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to zxcsft (1209911417919115264): [1028058376917237860]
+[2026-02-21 09:12:47,864] [INFO] ManceraBOT.modules.welcome: [welcome] sent for zxcsft (1209911417919115264)
+[2026-02-21 11:34:49,792] [INFO] ManceraBOT.modules.welcome: [leave] sent for tomm1kkkk (813549647049523240)
+[2026-02-21 14:52:21,855] [INFO] ManceraBOT.modules.welcome: [leave] sent for littlexqm (824286988978749451)
+[2026-02-21 16:19:45,558] [INFO] ManceraBOT.modules.welcome: [leave] sent for veronika579. (1461293653547946069)
+[2026-02-21 20:09:43,044] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-21 20:10:09,380] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-21 20:11:03,840] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-21 21:15:36,248] [INFO] ManceraBOT.modules.welcome: [leave] sent for max681732 (894204851515457606)
+[2026-02-21 21:16:42,132] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-21 21:26:29,393] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to ua_marakas (1174408257008308285): [1028058376917237860]
+[2026-02-21 21:26:30,146] [INFO] ManceraBOT.modules.welcome: [welcome] sent for ua_marakas (1174408257008308285)
+[2026-02-21 21:41:09,393] [INFO] ManceraBOT.modules.welcome: [leave] sent for lesbianizmgood (1174120307083182161)
+[2026-02-21 23:07:56,790] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to FredBoat♪♪#7284 (184405311681986560): [1028058376917237860]
+[2026-02-21 23:07:57,200] [INFO] ManceraBOT.modules.welcome: [welcome] sent for FredBoat♪♪#7284 (184405311681986560)
+[2026-02-22 10:18:02,160] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-22 14:42:08,736] [INFO] ManceraBOT.modules.welcome: [leave] sent for love_you_0._12775 (1327983849908604953)
+[2026-02-22 14:42:13,429] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-22 16:04:25,815] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to wolswel (1095710136300994661): [1028058376917237860]
+[2026-02-22 16:04:26,230] [INFO] ManceraBOT.modules.welcome: [welcome] sent for wolswel (1095710136300994661)
+[2026-02-22 16:23:51,229] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to ayamezzz (1470447271144325286): [1028058376917237860]
+[2026-02-22 16:23:51,774] [INFO] ManceraBOT.modules.welcome: [welcome] sent for ayamezzz (1470447271144325286)
+[2026-02-22 17:40:21,031] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to koreanbounty (922560651090604072): [1028058376917237860]
+[2026-02-22 17:40:21,608] [INFO] ManceraBOT.modules.welcome: [welcome] sent for koreanbounty (922560651090604072)
+[2026-02-22 22:53:56,803] [INFO] ManceraBOT.modules.welcome: [leave] sent for po3bedka (1008408501313347604)
+[2026-02-22 22:54:21,864] [INFO] ManceraBOT.modules.welcome: [welcome] sent for po3bedka (1008408501313347604)
+[2026-02-23 01:20:28,162] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to nickqname (312963569836883969): [1028058376917237860]
+[2026-02-23 01:20:30,213] [INFO] ManceraBOT.modules.welcome: [welcome] sent for nickqname (312963569836883969)
+[2026-02-23 05:19:20,351] [INFO] ManceraBOT.modules.welcome: [welcome] sent for dacha3296 (872168539946119198)
+[2026-02-23 09:21:13,944] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to natashiksss_24261 (1433828554919121108): [1028058376917237860]
+[2026-02-23 09:21:15,148] [INFO] ManceraBOT.modules.welcome: [welcome] sent for natashiksss_24261 (1433828554919121108)
+[2026-02-23 10:04:28,360] [INFO] ManceraBOT.modules.welcome: [leave] sent for rama_dva_vandama0078 (1413238937694240799)
+[2026-02-23 10:05:17,779] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-23 12:17:10,261] [INFO] ManceraBOT.modules.welcome: [leave] sent for kakapako (286938097843961858)
+[2026-02-23 13:25:40,179] [INFO] ManceraBOT.modules.welcome: [leave] sent for brbyxx (1006944014374809651)
+[2026-02-23 13:26:24,464] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-23 13:35:14,503] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to arrmorx (290067120677584897): [1028058376917237860]
+[2026-02-23 13:35:15,017] [INFO] ManceraBOT.modules.welcome: [welcome] sent for arrmorx (290067120677584897)
+[2026-02-23 13:57:07,357] [INFO] ManceraBOT.modules.welcome: [leave] sent for dontgetmewrong (331489869735919634)
+[2026-02-23 16:22:09,835] [INFO] ManceraBOT.modules.welcome: [welcome] sent for gellik0675 (1302316598291337246)
+[2026-02-23 16:26:56,791] [INFO] ManceraBOT.modules.welcome: [welcome] sent for lighttriad1 (1447732822856044715)
+[2026-02-23 16:32:38,810] [INFO] ManceraBOT.modules.welcome: [welcome] sent for gradus1k (1176961907333287998)
+[2026-02-23 17:26:46,028] [INFO] ManceraBOT.modules.welcome: [leave] sent for soezka (1117805222690042017)
+[2026-02-23 18:18:34,898] [INFO] ManceraBOT.modules.welcome: [leave] sent for jolywonka_ (413045899565203467)
+[2026-02-23 18:36:14,019] [INFO] ManceraBOT.modules.welcome: [leave] sent for i__vo170kg (780820927448612915)
+[2026-02-23 18:49:44,177] [INFO] ManceraBOT.modules.welcome: [leave] sent for sharkich2233 (1155017331936854106)
+[2026-02-23 19:01:37,083] [ERROR] ManceraBOT.modules.welcome: LEAVE ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 268, in on_member_remove
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-23 19:18:50,539] [INFO] ManceraBOT.modules.welcome: [leave] sent for dozasacred (1225523304949874759)
+[2026-02-23 19:19:04,821] [INFO] ManceraBOT.modules.welcome: [leave] sent for ziveee (953823058341265438)
+[2026-02-23 19:21:05,535] [INFO] ManceraBOT.modules.welcome: [leave] sent for gradus1k (1176961907333287998)
+[2026-02-23 19:33:53,395] [INFO] ManceraBOT.modules.welcome: [leave] sent for reihique (452870229526183937)
+[2026-02-23 20:13:27,094] [INFO] ManceraBOT.modules.welcome: [leave] sent for koreanbounty (922560651090604072)
+[2026-02-24 01:04:33,598] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to reihique (452870229526183937): [1028058376917237860]
+[2026-02-24 01:04:34,104] [INFO] ManceraBOT.modules.welcome: [welcome] sent for reihique (452870229526183937)
+[2026-02-24 01:07:31,050] [INFO] ManceraBOT.modules.welcome: [leave] sent for Akemi#4327 (708616355024207884)
+[2026-02-24 01:07:33,295] [INFO] ManceraBOT.modules.welcome: [leave] sent for Chip#4145 (614109280508968980)
+[2026-02-24 01:07:38,070] [INFO] ManceraBOT.modules.welcome: [leave] sent for Midjourney Bot#9282 (936929561302675456)
+[2026-02-24 05:39:44,139] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to 0_6y (1106236226790502565): [1028058376917237860]
+[2026-02-24 05:39:44,891] [INFO] ManceraBOT.modules.welcome: [welcome] sent for 0_6y (1106236226790502565)
+[2026-02-24 05:40:22,154] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to 01cx1 (559006812133916672): [1028058376917237860]
+[2026-02-24 05:40:22,752] [INFO] ManceraBOT.modules.welcome: [welcome] sent for 01cx1 (559006812133916672)
+[2026-02-24 07:26:20,176] [INFO] ManceraBOT.modules.welcome: [leave] sent for kam1k8826 (587116635978989569)
+[2026-02-24 08:06:49,542] [INFO] ManceraBOT.modules.welcome: [leave] sent for singer347 (653213965337493535)
+[2026-02-24 10:09:09,264] [INFO] ManceraBOT.modules.welcome: [welcome] sent for 2mpreza (989728536673792082)
+[2026-02-24 12:43:14,888] [INFO] ManceraBOT.modules.welcome: [leave] sent for danya_24t (1394683137891635382)
+[2026-02-24 13:13:09,748] [INFO] ManceraBOT.modules.welcome: [leave] sent for dizzrayy (938495358043029575)
+[2026-02-24 13:13:21,080] [INFO] ManceraBOT.modules.welcome: [leave] sent for babtistka (531500192315342867)
+[2026-02-24 16:28:04,351] [INFO] ManceraBOT.modules.welcome: [leave] sent for xzbanan (669410938868203520)
+[2026-02-24 16:45:50,259] [INFO] ManceraBOT.modules.welcome: [leave] sent for kairs0559 (772931083548229693)
+[2026-02-24 16:50:20,687] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to kairs0559 (772931083548229693): [1475872159233605873]
+[2026-02-24 16:50:21,088] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kairs0559 (772931083548229693)
+[2026-02-24 16:50:25,294] [INFO] ManceraBOT.modules.welcome: [leave] sent for kairs0559 (772931083548229693)
+[2026-02-24 16:54:17,271] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to kairs0559 (772931083548229693): [1475872159233605873]
+[2026-02-24 16:54:17,662] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kairs0559 (772931083548229693)
+[2026-02-24 16:54:27,171] [INFO] ManceraBOT.modules.welcome: [leave] sent for kairs0559 (772931083548229693)
+[2026-02-24 16:56:16,263] [INFO] ManceraBOT.modules.welcome: [welcome] sent for endless_eternity__ (506857922332983326)
+[2026-02-24 16:58:44,855] [INFO] ManceraBOT.modules.welcome: [auto_roles] Added roles to kairs0559 (772931083548229693): [1475872159233605873]
+[2026-02-24 16:58:45,283] [INFO] ManceraBOT.modules.welcome: [welcome] sent for kairs0559 (772931083548229693)
+[2026-02-24 16:58:50,157] [INFO] ManceraBOT.modules.welcome: [leave] sent for kairs0559 (772931083548229693)
+[2026-02-24 16:59:40,764] [INFO] ManceraBOT.modules.welcome: [leave] sent for Carl-bot#1536 (235148962103951360)
+[2026-02-24 17:35:34,153] [INFO] ManceraBOT.modules.welcome: [welcome] sent for slavik5624 (964148581550403604)
+[2026-02-24 17:58:12,894] [INFO] ManceraBOT.modules.welcome: [leave] sent for by6oh (364382355810418688)
+[2026-02-24 18:50:55,762] [INFO] ManceraBOT.modules.welcome: [leave] sent for roomanceplanet__89198 (1462793195695112225)
+[2026-02-24 23:37:47,392] [INFO] ManceraBOT.modules.welcome: [leave] sent for stepa9510 (929690871887192065)
+[2026-02-25 02:58:52,983] [INFO] ManceraBOT.modules.welcome: [leave] sent for mm1gas (609755494411796511)
+[2026-02-25 05:59:10,683] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 248, in on_member_join
+    channel = await self.bot.fetch_channel(channel_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/client.py", line 2665, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.11/site-packages/discord/http.py", line 769, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10003): Unknown Channel
+
+[2026-02-25 11:11:35,449] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 250, in on_member_join
+    await self._send_welcome(channel, member)
+  File "/home/container/modules/welcome/welcome.py", line 225, in _send_welcome
+    view = build_layout_view(cfg, member)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/modules/welcome/welcome.py", line 109, in build_layout_view
+    parts.append(ui.Section(ui.TextDisplay(txt)))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Section.__init__() missing 1 required keyword-only argument: 'accessory'
+
+[2026-02-25 12:31:28,294] [ERROR] ManceraBOT.modules.welcome: WELCOME ERROR:
+Traceback (most recent call last):
+  File "/home/container/modules/welcome/welcome.py", line 250, in on_member_join
+    await self._send_welcome(channel, member)
+  File "/home/container/modules/welcome/welcome.py", line 225, in _send_welcome
+    view = build_layout_view(cfg, member)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/modules/welcome/welcome.py", line 109, in build_layout_view
+    parts.append(ui.Section(ui.TextDisplay(txt)))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Section.__init__() missing 1 required keyword-only argument: 'accessory'
+

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ManceraBOT Dashboard</title>
+  <link rel="icon" href="/dashboard_static/favicon.ico">
+  <link rel="stylesheet" href="/dashboard_static/style.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand" id="brandName">ManceraBOT</div>
+      <div class="sub">Dashboard</div>
+
+      <div class="searchWrap">
+        <input class="search" id="search" placeholder="поиск по модулям..." />
+      </div>
+
+      <div class="sectionLabel">Модули</div>
+      <div class="nav" id="modulesList"></div>
+
+      <div class="footerNote">
+        <div class="tiny" id="botMeta"></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="titleWrap">
+          <div class="pageTitle" id="pageTitle">Панель управления</div>
+          <div class="pageHint" id="pageHint">Выбери модуль слева. Для welcome/infoaudit/requests/souz есть визуальные формы.</div>
+        </div>
+
+        <div class="topActions">
+          <div class="selectWrap">
+            <div class="selectLabel">Server</div>
+            <select id="guildSelect" class="select"></select>
+          </div>
+          <button class="btn primary" id="saveBtn">Сохранить</button>
+        </div>
+      </header>
+
+      <section class="card">
+        <div class="cardHeader">
+          <div class="cardTitle" id="cardTitle">Выбери модуль слева</div>
+          <div class="cardSub" id="cardSub">Настройки сохраняются в JSON, но редактируются через удобные поля.</div>
+        </div>
+
+        <div class="content" id="content">
+          <div class="empty">
+            <div class="emptyTitle">Выбери модуль слева</div>
+            <div class="emptyText">Дальше выбери сервер сверху справа — и редактируй настройки.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/dashboard_static/app.js"></script>
+</body>
+</html>
