@@ -1,0 +1,15 @@
+{
+  "panel": {
+    "title": "Анкета участника",
+    "description": "Нажми кнопку ниже, чтобы заполнить данные. Ник обновится автоматически.",
+    "image_url": ""
+  },
+  "logs": {
+    "channel_id": 0,
+    "history_file": "infoaudit_history.jsonl",
+    "rotate_mb": 10
+  },
+  "nickname": {
+    "template": "{first_word(server_name)} | {static_id}"
+  }
+}

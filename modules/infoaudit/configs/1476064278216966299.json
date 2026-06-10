@@ -1,0 +1,13 @@
+{
+  "panel": {
+    "title": "Анкета участника",
+    "description": "Нажми кнопку ниже, чтобы заполнить данные. Ник обновится автоматически.",
+    "image_url": ""
+  },
+  "logs": {
+    "channel_id": ""
+  },
+  "nickname": {
+    "template": "{first_word(server_name)} | {irl_name} | {static_id}"
+  }
+}

@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import os
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
@@ -29,7 +30,7 @@ def make_rotating_handler(log_file: Path) -> RotatingFileHandler:
     log_file.parent.mkdir(parents=True, exist_ok=True)
     handler = RotatingFileHandler(
         log_file,
-        maxBytes=2_000_000,  # 2MB
+        maxBytes=2_000_000,
         backupCount=5,
         encoding="utf-8",
     )
@@ -41,7 +42,6 @@ def setup_bot_logger() -> logging.Logger:
     logger = logging.getLogger("Phantom_Bot")
     logger.setLevel(logging.INFO)
 
-    # Не плодим handlers при перезапуске
     if logger.handlers:
         return logger
 
@@ -56,9 +56,6 @@ def setup_bot_logger() -> logging.Logger:
 
 
 def get_module_logger(module_name: str) -> logging.Logger:
-    """
-    Гарантирует, что logger "Phantom_Bot.modules.<name>" пишет в logs/modules/<name>/<name>.log
-    """
     logger = logging.getLogger(f"Phantom_Bot.modules.{module_name}")
     logger.setLevel(logging.INFO)
 
@@ -74,10 +71,6 @@ def get_module_logger(module_name: str) -> logging.Logger:
 # Module Loader
 # -------------------------
 def discover_modules() -> list[str]:
-    """
-    Ищем модули по схеме:
-      modules/<name>/<name>.py
-    """
     if not MODULES_DIR.exists():
         return []
 
@@ -85,12 +78,10 @@ def discover_modules() -> list[str]:
     for p in MODULES_DIR.iterdir():
         if p.is_dir() and (p / f"{p.name}.py").exists():
             out.append(p.name)
-
     return sorted(out)
 
 
 def extension_path(module_name: str) -> str:
-    # modules.welcome.welcome
     return f"modules.{module_name}.{module_name}"
 
 
@@ -102,9 +93,7 @@ async def load_modules(bot: commands.Bot, enabled: list[str] | None, log: loggin
     for name in target:
         ext = extension_path(name)
         try:
-            # Подготовим логгер модуля, чтобы он сразу писал в файл
             get_module_logger(name)
-
             await bot.load_extension(ext)
             results[name] = (True, None)
             log.info(f"[MODULE] {name}: loaded")
@@ -130,25 +119,33 @@ def build_intents(cfg: dict) -> discord.Intents:
 
 
 # -------------------------
-# Slash command sync helper
+# Sync slash commands
 # -------------------------
-async def sync_app_commands_all_guilds(bot: commands.Bot, log: logging.Logger):
-    """Синхронизирует слеш-команды на всех гильдиях, где есть бот."""
-    for guild in bot.guilds:
-        try:
-            bot.tree.copy_global_to(guild=guild)
-            await bot.tree.sync(guild=guild)
-            log.info(f"Синхронизированы команды для гильдии {guild.name} (ID: {guild.id})")
-        except Exception as e:
-            log.error(f"Ошибка синхронизации для гильдии {guild.name}: {e}")
+async def sync_app_commands_all_guilds(bot: commands.Bot):
+    """Глобальная синхронизация слеш-команд"""
+    try:
+        synced = await bot.tree.sync()
+        print(f"Синхронизировано {len(synced)} команд")
+    except Exception as e:
+        print(f"Ошибка синхронизации: {e}")
 
 
 # -------------------------
-# Main bot function
+# Bot
 # -------------------------
 async def main():
     cfg = load_main_config()
     log = setup_bot_logger()
+
+    # Получаем токен из переменных окружения или конфига
+    token = os.getenv('API_TOKEN') or os.getenv('BOT_TOKEN') or cfg.get('token')
+    if not token:
+        raise ValueError("Токен не найден. Установите переменную API_TOKEN или BOT_TOKEN, "
+                         "либо добавьте поле 'token' в config.json")
+    token = token.strip()
+    log.info("Токен загружен из %s",
+             "переменной окружения" if (os.getenv('API_TOKEN') or os.getenv('BOT_TOKEN')) else "config.json")
+    log.info(f"Первые 10 символов токена: {token[:10]}...")
 
     intents = build_intents(cfg)
     bot = commands.Bot(command_prefix=cfg.get("prefix", "!"), intents=intents)
@@ -164,16 +161,14 @@ async def main():
     async def on_ready():
         log.info(f"Logged in as {bot.user} (id={bot.user.id})")
 
-        # Автосинк slash-команд на всех серверах, где есть бот
         if not getattr(bot, "_appcmds_synced", False):
             try:
-                await sync_app_commands_all_guilds(bot, log)
+                await sync_app_commands_all_guilds(bot)
+            finally:
                 bot._appcmds_synced = True
-            except Exception as e:
-                log.error(f"Ошибка автосинка команд: {e}")
 
     # -------------------------
-    # Command: sync app commands (slash) on all guilds
+    # Commands
     # -------------------------
     @bot.command(name="synccommands")
     async def synccommands_cmd(ctx: commands.Context):
@@ -181,15 +176,12 @@ async def main():
             return await ctx.send("Нет прав.")
         await ctx.send("🔄 Синхронизирую slash-команды на всех серверах, где есть бот…")
         try:
-            await sync_app_commands_all_guilds(bot, log)
+            await sync_app_commands_all_guilds(bot)
             await ctx.send("✅ Готово: команды синхронизированы.")
         except Exception as e:
             log.error(f"[APP COMMANDS] manual sync failed -> {e}")
             await ctx.send(f"❌ Ошибка синка: `{e}`")
 
-    # -------------------------
-    # Commands: modules list
-    # -------------------------
     @bot.command(name="modules")
     async def modules_cmd(ctx: commands.Context):
         if not is_admin(ctx):
@@ -204,16 +196,6 @@ async def main():
             lines.append(f"✅ {m}" if ok else f"❌ {m} — {err}")
         await ctx.send("**Модули:**\n" + "\n".join(lines))
 
-
-    @bot.command(name="version")
-    async def version_cmd(ctx: commands.Context):
-        if not is_admin(ctx):
-            return await ctx.send("Нет прав.")
-        await ctx.send(f"📦 discord.py версия: `{discord.__version__}`")
-
-    # -------------------------
-    # Commands: reload / load / unload
-    # -------------------------
     @bot.command()
     async def reload(ctx: commands.Context, module_name: str):
         if not is_admin(ctx):
@@ -243,7 +225,6 @@ async def main():
         ext = extension_path(module_name)
         try:
             get_module_logger(module_name)
-
             await bot.load_extension(ext)
             bot.module_status[module_name] = (True, None)
             log.info(f"[MODULE] {module_name}: loaded via command")
@@ -268,17 +249,13 @@ async def main():
             bot.module_status[module_name] = (False, str(e))
             log.error(f"[MODULE] {module_name}: unload failed -> {e}")
             await ctx.send(f"❌ Ошибка: `{e}`")
-    
-    # -------------------------
-    # Command: create module skeleton
-    # -------------------------
+
     @bot.command()
     async def createmodule(ctx: commands.Context, module_name: str):
         if not is_admin(ctx):
             await ctx.send("Нет прав.")
             return
 
-        # Защита от пробелов, дефисов и т.п.
         if not module_name.isidentifier():
             await ctx.send("❌ Имя модуля должно быть как в Python: буквы/цифры/_ и не начинаться с цифры.")
             return
@@ -344,13 +321,12 @@ async def setup(bot: commands.Bot):
             f"Теперь можно: `!load {module_name}`"
         )
 
-    # -------------------------
-    # Auto-load enabled modules from config
-    # -------------------------
+    # Auto-load enabled modules
     enabled = cfg.get("modules_enabled")
     bot.module_status = await load_modules(bot, enabled, log)
 
-    await bot.start(cfg["token"])
+    # Запуск бота
+    await bot.start(token)
 
 
 if __name__ == "__main__":
