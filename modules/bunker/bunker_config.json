@@ -1,7 +1,7 @@
 {
   "enabled": true,
   "web_enabled": true,
-  "web_host": "0.0.0.0",
+  "web_host": "94.156.131.235",
   "web_port": 50227,
   "public_base_url": "",
   "survival_min": 0.3,
