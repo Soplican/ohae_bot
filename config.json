@@ -5,15 +5,17 @@
     "members": true,
     "message_content": true
   },
-
-  "modules_enabled": ["welcome", "logging_system", "infoaudit"],
-
+  "modules_enabled": [
+    "welcome",
+    "logging_system",
+    "infoaudit",
+    "birthday"
+  ],
   "discohook_local": {
     "enabled": true,
     "host": "0.0.0.0",
     "port": 50226,
     "api_secret": "Syndicate1212",
-
     "default_channel_id": 0,
     "allow_webhook_send": true,
     "allow_bot_send": true

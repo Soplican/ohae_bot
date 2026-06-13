@@ -1,0 +1,8 @@
+{
+  "enabled": true,
+  "default_message": "🎉 С днём рождения, {mention}! Сегодня твой день! 🎂",
+  "default_emojis": ["🎉", "🎂", "🎁"],
+  "embed_color": 16753920,
+  "birthday_role_id": null,
+  "birthday_channel_id": null
+}
