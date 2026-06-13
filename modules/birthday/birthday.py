@@ -8,7 +8,7 @@ import discord
 from discord.ext import commands, tasks
 
 MODULE_NAME = "birthday"
-log = logging.getLogger(f"Phantom_Bot.modules.{MODULE_NAME}")
+log = logging.getLogger(f"ohae.modules.{MODULE_NAME}")
 
 MODULE_DIR = Path("modules") / MODULE_NAME
 CFG_PATH = MODULE_DIR / "birthday_config.json"
