@@ -121,13 +121,32 @@ def build_intents(cfg: dict) -> discord.Intents:
 # -------------------------
 # Sync slash commands
 # -------------------------
-async def sync_app_commands_all_guilds(bot: commands.Bot):
-    """Глобальная синхронизация слеш-команд"""
+async def sync_app_commands_all_guilds(bot: commands.Bot, log: logging.Logger | None = None):
+    """Синхронизация slash-команд.
+
+    1) Глобально — команды могут появляться не сразу.
+    2) По каждому серверу — команды обычно появляются почти моментально.
+    """
+    logger = log or logging.getLogger("Phantom_Bot")
+
+    total = 0
+
     try:
-        synced = await bot.tree.sync()
-        print(f"Синхронизировано {len(synced)} команд")
+        synced_global = await bot.tree.sync()
+        total += len(synced_global)
+        logger.info(f"[APP COMMANDS] global synced: {len(synced_global)}")
     except Exception as e:
-        print(f"Ошибка синхронизации: {e}")
+        logger.error(f"[APP COMMANDS] global sync error -> {e}")
+
+    for guild in bot.guilds:
+        try:
+            synced_guild = await bot.tree.sync(guild=discord.Object(id=guild.id))
+            total += len(synced_guild)
+            logger.info(f"[APP COMMANDS] guild {guild.name} ({guild.id}) synced: {len(synced_guild)}")
+        except Exception as e:
+            logger.error(f"[APP COMMANDS] guild {guild.name} ({guild.id}) sync error -> {e}")
+
+    return total
 
 
 # -------------------------
@@ -163,7 +182,7 @@ async def main():
 
         if not getattr(bot, "_appcmds_synced", False):
             try:
-                await sync_app_commands_all_guilds(bot)
+                await sync_app_commands_all_guilds(bot, log)
             finally:
                 bot._appcmds_synced = True
 
@@ -176,8 +195,8 @@ async def main():
             return await ctx.send("Нет прав.")
         await ctx.send("🔄 Синхронизирую slash-команды на всех серверах, где есть бот…")
         try:
-            await sync_app_commands_all_guilds(bot)
-            await ctx.send("✅ Готово: команды синхронизированы.")
+            await sync_app_commands_all_guilds(bot, log)
+            await ctx.send("✅ Готово: slash-команды синхронизированы. Если не появились сразу — перезапусти Discord или подожди 1-2 минуты.")
         except Exception as e:
             log.error(f"[APP COMMANDS] manual sync failed -> {e}")
             await ctx.send(f"❌ Ошибка синка: `{e}`")
@@ -211,7 +230,8 @@ async def main():
             await bot.load_extension(ext)
             bot.module_status[module_name] = (True, None)
             log.info(f"[MODULE] {module_name}: reloaded")
-            await ctx.send(f"✅ Перезагружен: `{module_name}`")
+            await sync_app_commands_all_guilds(bot, log)
+            await ctx.send(f"✅ Перезагружен: `{module_name}` и slash-команды синхронизированы.")
         except Exception as e:
             bot.module_status[module_name] = (False, str(e))
             log.error(f"[MODULE] {module_name}: reload failed -> {e}")
@@ -228,7 +248,8 @@ async def main():
             await bot.load_extension(ext)
             bot.module_status[module_name] = (True, None)
             log.info(f"[MODULE] {module_name}: loaded via command")
-            await ctx.send(f"✅ Загружен: `{module_name}`")
+            await sync_app_commands_all_guilds(bot, log)
+            await ctx.send(f"✅ Загружен: `{module_name}` и slash-команды синхронизированы.")
         except Exception as e:
             bot.module_status[module_name] = (False, str(e))
             log.error(f"[MODULE] {module_name}: load failed -> {e}")
