@@ -5,6 +5,7 @@ import json
 import math
 import random
 import secrets
+import time
 import string
 from dataclasses import dataclass, asdict, field
 from pathlib import Path
@@ -19,6 +20,8 @@ MODULE_NAME = "bunker"
 MODULE_DIR = Path(__file__).parent
 CFG_PATH = MODULE_DIR / "bunker_config.json"
 DATA_PATH = MODULE_DIR / "bunker_games.json"
+STATS_PATH = MODULE_DIR / "bunker_stats.json"
+PACK_PATH = MODULE_DIR / "bunker_pack.json"
 
 DEFAULT_CFG = {
     "enabled": True,
@@ -34,6 +37,10 @@ DEFAULT_CFG = {
     "keep_eliminated_in_voice": True,
     "delete_voice_on_end": True,
     "embed_color": 0x5865F2,
+    "round_seconds": 180,
+    "ai_catastrophes": True,
+    "random_events_enabled": True,
+    "stats_enabled": True,
 }
 
 PROFESSIONS = [
@@ -85,9 +92,13 @@ BUNKER_PROBLEMS = [
 ROUND_FIELDS = [
     ("profession", "Профессия"),
     ("health", "Здоровье"),
-    ("item", "Предмет"),
+    ("hobby", "Хобби"),
+    ("phobia", "Фобия"),
+    ("baggage", "Багаж"),
+    ("backpack", "Рюкзак"),
     ("skill", "Навык"),
     ("fact", "Факт"),
+    ("special_card", "Спецкарта"),
 ]
 
 
@@ -114,23 +125,129 @@ def read_games() -> dict[str, Any]:
         return {}
 
 
+
+
+def read_stats() -> dict[str, Any]:
+    if not STATS_PATH.exists():
+        return {}
+    try:
+        return json.loads(STATS_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def save_stats(stats: dict[str, Any]) -> None:
+    STATS_PATH.write_text(json.dumps(stats, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+SAFE_REPLACEMENTS = {
+    "Порноактер": "Актёр независимого кино",
+    "Вебкам-модель": "Стример",
+    "Закладчик": "Кладоискатель",
+    "Наемный убийца": "Бывший телохранитель",
+    "Производитель взрывчатки": "Пиротехник",
+    "Порно": "Кино",
+    "порно": "кино",
+    "Героин 3гр": "Загадочный порошок в пакете",
+    "Суицидальные мысли": "Тяжёлый стресс",
+    "Копрофил": "Очень странные привычки",
+    "Убил бабушку из-за пенсии": "Имеет тёмное прошлое",
+    "Снимался в порно": "Снимался в низкобюджетном кино",
+    "Стопка журналов для взрослых": "Стопка старых журналов",
+    "Презервативы": "Набор латексных изделий",
+}
+
+
+def safe_text(value: Any) -> str:
+    text = str(value).strip()
+    for bad, good in SAFE_REPLACEMENTS.items():
+        text = text.replace(bad, good)
+    return text
+
+
+def add_history(game: "GameState", text: str) -> None:
+    stamp = time.strftime("%H:%M")
+    game.history.append(f"[{stamp}] {text}")
+    if len(game.history) > 80:
+        game.history = game.history[-80:]
+
+
+def generate_ai_catastrophe() -> tuple[str, str]:
+    causes = ["автономный ИИ", "неизвестный вирус", "солнечная буря", "военный эксперимент", "климатический коллапс", "сбой орбитальных систем"]
+    effects = ["разрушил инфраструктуру", "оставил города без энергии", "заразил большую часть поверхности", "заблокировал связь", "изменил климат", "сделал воду опасной"]
+    needs = ["чистая вода", "ремонт генератора", "медицинский контроль", "строгая дисциплина", "выращивание еды", "защита входа"]
+    c = random.choice(causes)
+    e = random.choice(effects)
+    n = random.choice(needs)
+    title = "🧠 Сгенерированная катастрофа"
+    desc = f"После катастрофы {c} {e}. Для выживания бункеру критически нужны: {n}."
+    return title, desc
+
+
+RANDOM_EVENTS = [
+    ("⚠️ Найдены припасы", "В старом отсеке нашли дополнительные ресурсы. Мест в бункере стало на 1 больше.", "places_plus"),
+    ("⚠️ Повреждение фильтров", "Часть фильтров воздуха вышла из строя. Мест в бункере стало на 1 меньше.", "places_minus"),
+    ("⚠️ Медосмотр", "Все игроки должны раскрыть здоровье.", "reveal_health"),
+    ("⚠️ Проверка вещей", "Все игроки должны раскрыть багаж.", "reveal_baggage"),
+    ("⚠️ Технический сбой", "Бункеру срочно нужен полезный навык. Все раскрывают навык.", "reveal_skill"),
+]
+
 def code_id(length: int = 6) -> str:
     alphabet = string.ascii_uppercase + string.digits
     return "".join(secrets.choice(alphabet) for _ in range(length))
 
 
+def load_pack() -> dict[str, list[str]]:
+    """Загружает полный пак карточек из bunker_pack.json.
+    Если файла нет или он повреждён, используются встроенные списки.
+    """
+    fallback = {
+        "professions": PROFESSIONS,
+        "health": HEALTH,
+        "hobbies": HOBBIES,
+        "phobias": PHOBIAS,
+        "baggage": ITEMS,
+        "backpacks": ITEMS,
+        "facts": FACTS,
+        "special_cards": [
+            "Игрок получает дополнительный багаж",
+            "Игрок получает второй случайный факт о себе",
+            "Увеличивает количество мест в бункере на 1",
+            "Уменьшает количество мест в бункере на 1",
+        ],
+    }
+    if not PACK_PATH.exists():
+        return fallback
+    try:
+        data = json.loads(PACK_PATH.read_text(encoding="utf-8"))
+        result = {}
+        for key, default in fallback.items():
+            values = data.get(key) or default
+            clean = [safe_text(v) for v in values if safe_text(v)]
+            result[key] = clean or default
+        return result
+    except Exception:
+        return fallback
+
+
+def choose_from_pack(key: str, fallback: list[str]) -> str:
+    pack = load_pack()
+    return random.choice(pack.get(key) or fallback)
+
+
 def make_card() -> dict[str, str | int]:
     return {
-        "profession": random.choice(PROFESSIONS),
+        "profession": choose_from_pack("professions", PROFESSIONS),
         "age": random.randint(18, 65),
-        "health": random.choice(HEALTH),
-        "hobby": random.choice(HOBBIES),
-        "phobia": random.choice(PHOBIAS),
-        "item": random.choice(ITEMS),
+        "health": choose_from_pack("health", HEALTH),
+        "hobby": choose_from_pack("hobbies", HOBBIES),
+        "phobia": choose_from_pack("phobias", PHOBIAS),
+        "baggage": choose_from_pack("baggage", ITEMS),
+        "backpack": choose_from_pack("backpacks", ITEMS),
         "skill": random.choice(SKILLS),
-        "fact": random.choice(FACTS),
+        "fact": choose_from_pack("facts", FACTS),
+        "special_card": choose_from_pack("special_cards", ["Игрок получает дополнительный багаж"]),
     }
-
 
 @dataclass
 class PlayerState:
@@ -140,6 +257,7 @@ class PlayerState:
     alive: bool = True
     card: dict[str, Any] = field(default_factory=make_card)
     revealed: list[str] = field(default_factory=list)
+    special_used: bool = False
 
 
 @dataclass
@@ -160,6 +278,9 @@ class GameState:
     round_index: int = 0
     players: dict[int, PlayerState] = field(default_factory=dict)
     votes: dict[int, int] = field(default_factory=dict)  # voter_id -> target_id
+    history: list[str] = field(default_factory=list)
+    round_ends_at: Optional[float] = None
+    current_event: str = ""
 
     def public_url(self, cfg: dict, token: str | None = None) -> str:
         base = (cfg.get("public_base_url") or "").rstrip("/")
@@ -211,6 +332,10 @@ class BunkerGameView(discord.ui.View):
     @discord.ui.button(label="Голосование", style=discord.ButtonStyle.danger, emoji="🗳️")
     async def vote_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.cog.open_vote(interaction, self.game_id)
+
+    @discord.ui.button(label="Событие", style=discord.ButtonStyle.success, emoji="⚠️")
+    async def event_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.cog.trigger_event(interaction, self.game_id)
 
     @discord.ui.button(label="Закончить", style=discord.ButtonStyle.secondary, emoji="⛔")
     async def end_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -270,11 +395,13 @@ class BunkerCog(commands.Cog):
                     catastrophe_desc=g.get("catastrophe_desc", ""), bunker_problem=g.get("bunker_problem", ""),
                     voice_channel_id=g.get("voice_channel_id"), message_id=g.get("message_id"), round_index=int(g.get("round_index", 0)),
                     votes={int(k): int(v) for k, v in g.get("votes", {}).items()},
+                    history=g.get("history", []), round_ends_at=g.get("round_ends_at"), current_event=g.get("current_event", ""),
                 )
                 for pid, p in g.get("players", {}).items():
                     game.players[int(pid)] = PlayerState(
                         id=int(p["id"]), name=p.get("name", "Player"), token=p.get("token", secrets.token_urlsafe(12)),
                         alive=bool(p.get("alive", True)), card=p.get("card") or make_card(), revealed=p.get("revealed", []),
+                        special_used=bool(p.get("special_used", False)),
                     )
                 self.games[gid] = game
             except Exception:
@@ -320,6 +447,13 @@ class BunkerCog(commands.Cog):
         field_key, field_name = game.current_round()
         e.add_field(name="Текущий раунд", value=field_name, inline=True)
         e.add_field(name="Сайт", value=game.public_url(self.cfg), inline=False)
+        if game.current_event:
+            e.add_field(name="Событие", value=game.current_event[:1024], inline=False)
+        if game.round_ends_at:
+            left = max(0, int(game.round_ends_at - time.time()))
+            e.add_field(name="Таймер", value=f"{left//60:02d}:{left%60:02d}", inline=True)
+        if game.history:
+            e.add_field(name="История", value="\n".join(game.history[-5:])[:1024], inline=False)
         alive = [f"✅ {p.name}" for p in game.alive_players()]
         dead = [f"❌ {p.name}" for p in game.players.values() if not p.alive]
         e.add_field(name="Игроки", value="\n".join(alive + dead)[:1024] or "—", inline=False)
@@ -365,6 +499,21 @@ class BunkerCog(commands.Cog):
         msg = await interaction.original_response()
         game.message_id = msg.id
         self.persist()
+
+    @bunker.command(name="pack", description="Показать, сколько карточек загружено в Бункер")
+    async def pack_slash(self, interaction: discord.Interaction):
+        pack = load_pack()
+        text = (
+            f"Профессии: **{len(pack.get('professions', []))}**\n"
+            f"Здоровье: **{len(pack.get('health', []))}**\n"
+            f"Хобби: **{len(pack.get('hobbies', []))}**\n"
+            f"Фобии: **{len(pack.get('phobias', []))}**\n"
+            f"Багаж: **{len(pack.get('baggage', []))}**\n"
+            f"Рюкзак: **{len(pack.get('backpacks', []))}**\n"
+            f"Факты: **{len(pack.get('facts', []))}**\n"
+            f"Спецкарты: **{len(pack.get('special_cards', []))}**"
+        )
+        await interaction.response.send_message(text, ephemeral=True)
 
     @bunker.command(name="card", description="Получить ссылку на свою карточку")
     async def card_slash(self, interaction: discord.Interaction):
@@ -440,11 +589,13 @@ class BunkerCog(commands.Cog):
         smax = float(self.cfg.get("survival_max", 0.4))
         game.survival_rate = random.uniform(smin, smax)
         game.places = max(1, math.ceil(len(game.players) * game.survival_rate))
-        title, desc = random.choice(CATASTROPHES)
+        title, desc = generate_ai_catastrophe() if self.cfg.get("ai_catastrophes", True) else random.choice(CATASTROPHES)
         game.catastrophe_title = title
         game.catastrophe_desc = desc
         game.bunker_problem = random.choice(BUNKER_PROBLEMS)
         game.status = "started"
+        game.round_ends_at = time.time() + int(self.cfg.get("round_seconds", 180))
+        add_history(game, f"Игра началась. Мест: {game.places}, шанс: {round(game.survival_rate * 100)}%")
         await self.create_voice_and_move(interaction.guild, game)
         self.persist()
         await self.send_private_cards(game)
@@ -489,9 +640,11 @@ class BunkerCog(commands.Cog):
         e.add_field(name="Здоровье", value=str(c.get("health")), inline=False)
         e.add_field(name="Хобби", value=str(c.get("hobby")), inline=True)
         e.add_field(name="Фобия", value=str(c.get("phobia")), inline=True)
-        e.add_field(name="Предмет", value=str(c.get("item")), inline=False)
+        e.add_field(name="Багаж", value=str(c.get("baggage", c.get("item", "—"))), inline=False)
+        e.add_field(name="Рюкзак", value=str(c.get("backpack", "—")), inline=False)
         e.add_field(name="Навык", value=str(c.get("skill")), inline=False)
         e.add_field(name="Факт", value=str(c.get("fact")), inline=False)
+        e.add_field(name="Спецкарта", value=str(c.get("special_card", "—")), inline=False)
         e.add_field(name="Сайт", value=game.public_url(self.cfg, p.token), inline=False)
         return e
 
@@ -521,8 +674,10 @@ class BunkerCog(commands.Cog):
             p.revealed.append(key) if key not in p.revealed else None
             lines.append(f"**{p.name}** — {val}")
         e = discord.Embed(title=f"🃏 Раунд: {title}", description="\n".join(lines)[:4000], color=int(self.cfg.get("embed_color", 0x5865F2)))
+        add_history(game, f"Раскрыт раунд: {title}")
         if game.round_index < len(ROUND_FIELDS) - 1:
             game.round_index += 1
+        game.round_ends_at = time.time() + int(self.cfg.get("round_seconds", 180))
         self.persist()
         await self.refresh_message(game)
         await interaction.response.send_message(embed=e)
@@ -535,6 +690,8 @@ class BunkerCog(commands.Cog):
             return await interaction.response.send_message("Голосование запускает ведущий или админ.", ephemeral=True)
         game.status = "voting"
         game.votes = {}
+        game.round_ends_at = time.time() + 180
+        add_history(game, "Запущено голосование")
         self.persist()
         e = discord.Embed(title="🗳️ Голосование", description="Кого выгнать из бункера? Голосуют только живые игроки.\nВремя: 3 минуты.", color=0xED4245)
         await interaction.response.send_message(embed=e, view=VoteView(self, game_id))
@@ -577,6 +734,7 @@ class BunkerCog(commands.Cog):
         loser = game.players.get(loser_id)
         if loser:
             loser.alive = False
+            add_history(game, f"Выгнан игрок: {loser.name}")
         game.votes = {}
         game.status = "started"
         self.persist()
@@ -618,6 +776,7 @@ class BunkerCog(commands.Cog):
         e.add_field(name="Выжившие", value="\n".join(lines)[:1024] or "Нет выживших", inline=False)
         if isinstance(ch, discord.TextChannel):
             await ch.send(embed=e)
+        self.update_stats(game)
         if self.cfg.get("delete_voice_on_end", True) and game.voice_channel_id:
             vc = self.bot.get_channel(game.voice_channel_id)
             if isinstance(vc, discord.VoiceChannel):
@@ -627,11 +786,106 @@ class BunkerCog(commands.Cog):
                     pass
         self.persist()
 
+
+    def update_stats(self, game: GameState):
+        if not self.cfg.get("stats_enabled", True):
+            return
+        stats = read_stats()
+        alive_ids = {p.id for p in game.alive_players()}
+        for p in game.players.values():
+            key = str(p.id)
+            rec = stats.get(key, {"name": p.name, "games": 0, "wins": 0, "losses": 0})
+            rec["name"] = p.name
+            rec["games"] = int(rec.get("games", 0)) + 1
+            if p.id in alive_ids:
+                rec["wins"] = int(rec.get("wins", 0)) + 1
+            else:
+                rec["losses"] = int(rec.get("losses", 0)) + 1
+            stats[key] = rec
+        save_stats(stats)
+
+    async def trigger_event(self, interaction: discord.Interaction, game_id: str):
+        game = self.games.get(game_id)
+        if not game or game.status not in ("started", "voting"):
+            return await interaction.response.send_message("Игра не запущена.", ephemeral=True)
+        if not self.is_host_or_admin(interaction.user, interaction.guild, game):
+            return await interaction.response.send_message("Событие запускает ведущий или админ.", ephemeral=True)
+        title, desc, action = random.choice(RANDOM_EVENTS)
+        if action == "places_plus" and game.places is not None:
+            game.places += 1
+        elif action == "places_minus" and game.places is not None:
+            game.places = max(1, game.places - 1)
+        elif action.startswith("reveal_"):
+            key = action.replace("reveal_", "")
+            for p in game.alive_players():
+                if key not in p.revealed:
+                    p.revealed.append(key)
+        game.current_event = f"{title}\n{desc}"
+        add_history(game, f"Событие: {title}")
+        self.persist()
+        await self.refresh_message(game)
+        await interaction.response.send_message(embed=discord.Embed(title=title, description=desc, color=0xFEE75C))
+
+    def apply_special_card(self, game: GameState, player: PlayerState) -> str:
+        if player.special_used:
+            return "Спецкарта уже использована."
+        text = str(player.card.get("special_card", ""))
+        player.special_used = True
+        low = text.lower()
+        if "увелич" in low and "мест" in low and game.places is not None:
+            game.places += 1
+            result = "+1 место в бункере."
+        elif "уменьш" in low and "мест" in low and game.places is not None:
+            game.places = max(1, game.places - 1)
+            result = "-1 место в бункере."
+        elif "дополнительный багаж" in low:
+            player.card["extra_baggage"] = choose_from_pack("baggage", ITEMS)
+            result = f"Получен дополнительный багаж: {player.card['extra_baggage']}"
+        elif "дополнительный рюкзак" in low:
+            player.card["extra_backpack"] = choose_from_pack("backpacks", ITEMS)
+            result = f"Получен дополнительный рюкзак: {player.card['extra_backpack']}"
+        elif "второй случайный факт" in low or "второй" in low and "факт" in low:
+            player.card["extra_fact"] = choose_from_pack("facts", FACTS)
+            result = f"Получен дополнительный факт: {player.card['extra_fact']}"
+        elif "второе случайное хобби" in low or "второе" in low and "хобби" in low:
+            player.card["extra_hobby"] = choose_from_pack("hobbies", HOBBIES)
+            result = f"Получено второе хобби: {player.card['extra_hobby']}"
+        elif "вторую случайную профессию" in low or "двух област" in low:
+            player.card["extra_profession"] = choose_from_pack("professions", PROFESSIONS)
+            result = f"Получена вторая профессия: {player.card['extra_profession']}"
+        elif "здоров" in low:
+            player.card["health"] = choose_from_pack("health", HEALTH)
+            result = f"Здоровье изменено: {player.card['health']}"
+        elif "фоби" in low:
+            player.card["phobia"] = choose_from_pack("phobias", PHOBIAS)
+            result = f"Фобия изменена: {player.card['phobia']}"
+        elif "хобби" in low:
+            player.card["hobby"] = choose_from_pack("hobbies", HOBBIES)
+            result = f"Хобби изменено: {player.card['hobby']}"
+        elif "багаж" in low:
+            player.card["baggage"] = choose_from_pack("baggage", ITEMS)
+            result = f"Багаж изменён: {player.card['baggage']}"
+        elif "рюкзак" in low:
+            player.card["backpack"] = choose_from_pack("backpacks", ITEMS)
+            result = f"Рюкзак изменён: {player.card['backpack']}"
+        elif "професс" in low:
+            player.card["profession"] = choose_from_pack("professions", PROFESSIONS)
+            result = f"Профессия изменена: {player.card['profession']}"
+        else:
+            # Универсальный эффект для сложных карт, которые требуют выбора игрока.
+            player.card["extra_fact"] = choose_from_pack("facts", FACTS)
+            result = f"Сложная карта применена как бонусный факт: {player.card['extra_fact']}"
+        add_history(game, f"{player.name} использовал спецкарту")
+        self.persist()
+        return result
+
     async def start_web(self):
         app = web.Application()
+        app.router.add_get("/", self.web_home)
         app.router.add_get("/bunker/{game_id}", self.web_game)
         app.router.add_get("/bunker_api/{game_id}", self.web_api_game)
         app.router.add_post("/bunker_api/{game_id}/vote", self.web_api_vote)
+        app.router.add_post("/bunker_api/{game_id}/special", self.web_api_special)
         self.web_runner = web.AppRunner(app)
         await self.web_runner.setup()
         self.web_site = web.TCPSite(self.web_runner, self.cfg.get("web_host", "0.0.0.0"), int(self.cfg.get("web_port", 50227)))
@@ -646,24 +900,55 @@ class BunkerCog(commands.Cog):
                 return p
         return None
 
+    async def web_home(self, request: web.Request):
+        html = """<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ohae</title>
+<style>body{margin:0;background:radial-gradient(circle at top,#232846,#0b0d13);color:#fff;font-family:Inter,Arial,sans-serif}.wrap{max-width:1050px;margin:0 auto;padding:36px}.hero{padding:36px;border:1px solid #30364d;border-radius:28px;background:rgba(20,24,36,.82);box-shadow:0 20px 60px #0008}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:18px}.card{background:#151925;border:1px solid #2b3040;border-radius:20px;padding:18px}.muted{color:#aeb4c2}a{color:#8ea2ff}</style></head><body><div class=wrap><div class=hero><h1>🌐 Ohae Web</h1><p class=muted>Веб-панель модулей Discord-бота.</p><div class=grid><div class=card><h2>🏚️ Бункер</h2><p>Карточки, голосования, таймеры, события и статистика.</p></div><div class=card><h2>🎂 Birthday</h2><p>Поздравления и события дня рождения.</p></div><div class=card><h2>📊 Dashboard</h2><p>Панель управления сервером.</p></div></div></div></div></body></html>"""
+        return web.Response(text=html, content_type="text/html")
+
     async def web_game(self, request: web.Request):
         gid = request.match_info["game_id"]
         token = request.query.get("token", "")
         html = f"""<!doctype html><html lang=\"ru\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Бункер {gid}</title>
-<style>body{{margin:0;background:#0f1117;color:#fff;font-family:Arial,sans-serif}}.wrap{{max-width:1000px;margin:0 auto;padding:24px}}.card{{background:#181b24;border:1px solid #2b3040;border-radius:16px;padding:18px;margin:12px 0}}button{{background:#5865f2;color:white;border:0;border-radius:10px;padding:10px 14px;margin:5px;cursor:pointer}}button.danger{{background:#ed4245}}.muted{{color:#aeb4c2}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}}</style>
-</head><body><div class=\"wrap\"><h1>🏚️ Бункер</h1><div id=\"app\">Загрузка...</div></div>
+<style>
+:root{{--bg:#0b0d13;--panel:#151925;--panel2:#1d2230;--line:#30364d;--text:#fff;--muted:#aeb4c2;--accent:#5865f2;--danger:#ed4245;--good:#57f287;--warn:#fee75c}}
+*{{box-sizing:border-box}}body{{margin:0;background:radial-gradient(circle at top,#293052 0,#0b0d13 55%);color:var(--text);font-family:Inter,Arial,sans-serif}}.wrap{{max-width:1280px;margin:0 auto;padding:22px}}.top{{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:16px}}.badge{{background:#242a3b;border:1px solid var(--line);border-radius:999px;padding:8px 12px;color:var(--muted)}}.grid{{display:grid;grid-template-columns:1.3fr .7fr;gap:16px}}.cards{{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}}.panel,.player,.mycard{{background:rgba(21,25,37,.88);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 16px 45px #0005}}.cat{{min-height:230px;background:linear-gradient(135deg,#252b47,#151925 55%,#321b24);position:relative;overflow:hidden}}.cat:after{{content:'☢';position:absolute;right:18px;bottom:-26px;font-size:150px;opacity:.08}}.muted{{color:var(--muted)}}button{{background:var(--accent);color:white;border:0;border-radius:12px;padding:10px 14px;margin:5px;cursor:pointer;font-weight:700}}button.danger{{background:var(--danger)}}button.good{{background:#238755}}.stat{{display:flex;gap:8px;flex-wrap:wrap}}.stat span{{background:#242a3b;border:1px solid var(--line);border-radius:14px;padding:10px 12px}}.alive{{border-color:#2e8f5a}}.dead{{opacity:.55}}.history{{max-height:310px;overflow:auto}}.history p{{margin:8px 0;color:#d7d9e5}}.timer{{font-size:34px;font-weight:900;color:var(--warn)}}.vote-card{{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#202638;border:1px solid var(--line);border-radius:16px;padding:12px;margin:8px 0}}a{{color:#a8b5ff}}@media(max-width:900px){{.grid{{grid-template-columns:1fr}}}}
+</style></head><body><div class=\"wrap\"><div class=\"top\"><h1>🏚️ Бункер</h1><div class=\"badge\">Game ID: {gid}</div></div><div id=\"app\">Загрузка...</div></div>
 <script>
-const GAME_ID = {json.dumps(gid)}; const TOKEN = {json.dumps(token)};
-async function load(){{ const r=await fetch(`/bunker_api/${{GAME_ID}}?token=${{encodeURIComponent(TOKEN)}}`); const d=await r.json(); render(d); }}
+const GAME_ID = {json.dumps(gid)}; const TOKEN = {json.dumps(token)}; let last=null;
+async function load(){{ const r=await fetch(`/bunker_api/${{GAME_ID}}?token=${{encodeURIComponent(TOKEN)}}`); const d=await r.json(); last=d; render(d); }}
 async function vote(id){{ await fetch(`/bunker_api/${{GAME_ID}}/vote?token=${{encodeURIComponent(TOKEN)}}`,{{method:'POST',headers:{{'Content-Type':'application/json'}},body:JSON.stringify({{target_id:id}})}}); await load(); }}
+async function special(){{ await fetch(`/bunker_api/${{GAME_ID}}/special?token=${{encodeURIComponent(TOKEN)}}`,{{method:'POST'}}); await load(); }}
 function esc(s){{return String(s??'').replace(/[&<>]/g,c=>({{'&':'&amp;','<':'&lt;','>':'&gt;'}}[c]));}}
-function render(d){{ if(d.error){{document.getElementById('app').innerHTML=`<div class=card>Ошибка: ${{esc(d.error)}}</div>`;return;}}
-let card=''; if(d.me){{card=`<div class=card><h2>👤 Моя карточка</h2><div class=grid>${{Object.entries(d.me.card).map(([k,v])=>`<div><b>${{esc(k)}}</b><br>${{esc(v)}}</div>`).join('')}}</div></div>`}}
-let vote=''; if(d.can_vote){{vote=`<div class=card><h2>🗳️ Голосование</h2>${{d.players.filter(p=>p.alive && (!d.me || p.id!==d.me.id)).map(p=>`<button class=danger onclick="vote('${{p.id}}')">${{esc(p.name)}}</button>`).join('')}}</div>`}}
-document.getElementById('app').innerHTML=`<div class=card><h2>${{esc(d.catastrophe.title||'Ожидание старта')}}</h2><p>${{esc(d.catastrophe.desc||'')}}</p><p class=muted>Статус: ${{esc(d.status)}} | Игроков: ${{d.players.length}}/${{d.max_players}} | Мест: ${{d.places??'?' }} | Шанс: ${{d.survival_rate?Math.round(d.survival_rate*100)+'%':'?'}}</p><p>Проблема бункера: <b>${{esc(d.bunker_problem||'будет выбрана при старте')}}</b></p></div><div class=card><h2>Игроки</h2>${{d.players.map(p=>`<p>${{p.alive?'✅':'❌'}} ${{esc(p.name)}} ${{p.revealed && p.revealed.length ? '<span class=muted>— раскрыто: '+esc(p.revealed.join(', '))+'</span>' : ''}}</p>`).join('')}}</div>${{card}}${{vote}}`; }}
-load(); setInterval(load, 5000);
+function tleft(ts){{ if(!ts)return '?'; const left=Math.max(0, Math.floor(ts-Date.now()/1000)); return String(Math.floor(left/60)).padStart(2,'0')+':'+String(left%60).padStart(2,'0'); }}
+function cardBlock(title,obj){{return `<div class=mycard><h2>${{title}}</h2><div class=cards>${{Object.entries(obj||{{}}).map(([k,v])=>`<div><b>${{esc(k)}}</b><br><span class=muted>${{esc(v)}}</span></div>`).join('')}}</div></div>`}}
+function render(d){{ if(d.error){{document.getElementById('app').innerHTML=`<div class=panel>Ошибка: ${{esc(d.error)}}</div>`;return;}}
+let me = d.me ? cardBlock('👤 Моя карточка', d.me.card) : '<div class=panel><h2>👤 Моя карточка</h2><p class=muted>Открой личную ссылку с token из Discord.</p></div>';
+let special = d.me ? `<div class=panel><h2>🃏 Спецкарта</h2><p>${{esc(d.me.card['Спецкарта'])}}</p><button class=good onclick="special()" ${{d.me.special_used?'disabled':''}}>${{d.me.special_used?'Уже использована':'Использовать'}}</button></div>` : '';
+let vote = d.can_vote ? `<div class=panel><h2>🗳️ Голосование</h2>${{d.players.filter(p=>p.alive && (!d.me || p.id!==d.me.id)).map(p=>`<div class=vote-card><div>👤 <b>${{esc(p.name)}}</b><br><span class=muted>${{esc(p.profession||'профессия скрыта')}}</span></div><button class=danger onclick="vote('${{p.id}}')">Голосовать</button></div>`).join('')}}</div>` : '';
+let players = `<div class=panel><h2>👥 Игроки</h2><div class=cards>${{d.players.map(p=>`<div class="player ${{p.alive?'alive':'dead'}}"><b>${{p.alive?'✅':'❌'}} ${{esc(p.name)}}</b><br><span class=muted>${{esc(p.profession||'скрыто')}}</span><br><small>${{p.revealed?.length?'Раскрыто: '+esc(p.revealed.join(', ')):'Ничего не раскрыто'}}</small></div>`).join('')}}</div></div>`;
+let hist = `<div class=panel history><h2>📜 История</h2>${{(d.history||[]).slice(-20).reverse().map(x=>`<p>${{esc(x)}}</p>`).join('') || '<p class=muted>Событий пока нет.</p>'}}</div>`;
+let event = d.current_event ? `<div class=panel><h2>⚠️ Событие</h2><p>${{esc(d.current_event)}}</p></div>` : '';
+let stats = d.me?.stats ? `<div class=panel><h2>🏆 Статистика</h2><p>Игр: <b>${{d.me.stats.games}}</b> | Побед: <b>${{d.me.stats.wins}}</b> | Выживаемость: <b>${{d.me.stats.winrate}}%</b></p></div>` : '';
+document.getElementById('app').innerHTML=`<div class=grid><main><div class="panel cat"><h2>${{esc(d.catastrophe.title||'Ожидание старта')}}</h2><p>${{esc(d.catastrophe.desc||'')}}</p><div class=stat><span>Статус: <b>${{esc(d.status)}}</b></span><span>Игроков: <b>${{d.players.length}}/${{d.max_players}}</b></span><span>Мест: <b>${{d.places??'?'}}</b></span><span>Шанс: <b>${{d.survival_rate?Math.round(d.survival_rate*100)+'%':'?'}}</b></span><span>Voice: <b>${{d.voice.online}}/${{d.voice.allowed}}</b></span></div><p class=muted>Проблема бункера: ${{esc(d.bunker_problem||'будет выбрана при старте')}}</p><div class=timer>${{tleft(d.round_ends_at)}}</div></div>${{players}}${{me}}${{vote}}</main><aside>${{event}}${{special}}${{stats}}${{hist}}</aside></div>`; }}
+load(); setInterval(load, 3000);
 </script></body></html>"""
         return web.Response(text=html, content_type="text/html")
+
+    def voice_status(self, game: GameState) -> dict[str, Any]:
+        guild = self.bot.get_guild(game.guild_id)
+        online = 0
+        if guild and game.voice_channel_id:
+            vc = guild.get_channel(game.voice_channel_id)
+            if isinstance(vc, discord.VoiceChannel):
+                ids = {m.id for m in vc.members}
+                online = sum(1 for p in game.players.values() if p.id in ids)
+        return {"online": online, "allowed": len(game.players)}
+
+    def user_stats(self, user_id: int) -> dict[str, Any]:
+        rec = read_stats().get(str(user_id), {"games": 0, "wins": 0, "losses": 0})
+        games = int(rec.get("games", 0))
+        wins = int(rec.get("wins", 0))
+        return {"games": games, "wins": wins, "losses": int(rec.get("losses", 0)), "winrate": round((wins / games) * 100) if games else 0}
 
     async def web_api_game(self, request: web.Request):
         game = self.games.get(request.match_info["game_id"])
@@ -672,20 +957,25 @@ load(); setInterval(load, 5000);
         me = self._player_by_token(game, request.query.get("token"))
         players = []
         for p in game.players.values():
-            players.append({"id": str(p.id), "name": p.name, "alive": p.alive, "revealed": [dict(ROUND_FIELDS).get(k, k) for k in p.revealed]})
+            players.append({"id": str(p.id), "name": p.name, "alive": p.alive, "revealed": [dict(ROUND_FIELDS).get(k, k) for k in p.revealed], "profession": p.card.get("profession") if "profession" in p.revealed or game.status == "ended" else None})
         data = {
             "id": game.id, "status": game.status, "max_players": game.max_players, "places": game.places,
             "survival_rate": game.survival_rate, "bunker_problem": game.bunker_problem,
             "catastrophe": {"title": game.catastrophe_title, "desc": game.catastrophe_desc},
             "players": players, "can_vote": bool(me and me.alive and game.status == "voting"),
+            "history": game.history, "round_ends_at": game.round_ends_at, "current_event": game.current_event,
+            "voice": self.voice_status(game),
             "me": None,
         }
         if me:
             data["me"] = {"id": str(me.id), "name": me.name, "alive": me.alive, "card": {
                 "Профессия": me.card.get("profession"), "Возраст": me.card.get("age"), "Здоровье": me.card.get("health"),
-                "Хобби": me.card.get("hobby"), "Фобия": me.card.get("phobia"), "Предмет": me.card.get("item"),
-                "Навык": me.card.get("skill"), "Факт": me.card.get("fact"),
-            }}
+                "Хобби": me.card.get("hobby"), "Фобия": me.card.get("phobia"),
+                "Багаж": me.card.get("baggage", me.card.get("item")), "Рюкзак": me.card.get("backpack"),
+                "Навык": me.card.get("skill"), "Факт": me.card.get("fact"), "Спецкарта": me.card.get("special_card"),
+                "Доп. профессия": me.card.get("extra_profession"), "Доп. хобби": me.card.get("extra_hobby"),
+                "Доп. факт": me.card.get("extra_fact"), "Доп. багаж": me.card.get("extra_baggage"), "Доп. рюкзак": me.card.get("extra_backpack"),
+            }, "special_used": me.special_used, "stats": self.user_stats(me.id)}
         return web.json_response(data)
 
     async def web_api_vote(self, request: web.Request):
@@ -705,6 +995,24 @@ load(); setInterval(load, 5000);
         if len(game.votes) >= len(game.alive_players()):
             asyncio.create_task(self.finish_vote(game.id))
         return web.json_response({"ok": True})
+
+    async def web_api_special(self, request: web.Request):
+        game = self.games.get(request.match_info["game_id"])
+        if not game:
+            return web.json_response({"error": "game_not_found"}, status=404)
+        me = self._player_by_token(game, request.query.get("token"))
+        if not me or not me.alive or game.status not in ("started", "voting"):
+            return web.json_response({"error": "cant_use_special"}, status=403)
+        result = self.apply_special_card(game, me)
+        ch = self.bot.get_channel(game.channel_id)
+        if isinstance(ch, discord.TextChannel):
+            try:
+                await ch.send(f"🃏 **{me.name}** использовал спецкарту: {result}")
+            except Exception:
+                pass
+        await self.refresh_message(game)
+        return web.json_response({"ok": True, "result": result})
+
 
 
 async def setup(bot: commands.Bot):
