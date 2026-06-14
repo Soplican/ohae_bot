@@ -6,7 +6,6 @@ import math
 import random
 import secrets
 import time
-import os
 import urllib.parse
 import string
 from dataclasses import dataclass, asdict, field
@@ -47,9 +46,6 @@ DEFAULT_CFG = {
     "discord_client_id": "",
     "discord_client_secret": "",
     "discord_redirect_uri": "https://ohae.bothost.tech/auth/discord/callback",
-    "season_name": "",
-    "push_updates": True,
-    "ai_host_default": True,
 }
 
 PROFESSIONS = [
@@ -199,12 +195,6 @@ RANDOM_EVENTS = [
     ("⚠️ Медосмотр", "Все игроки должны раскрыть здоровье.", "reveal_health"),
     ("⚠️ Проверка вещей", "Все игроки должны раскрыть багаж.", "reveal_baggage"),
     ("⚠️ Технический сбой", "Бункеру срочно нужен полезный навык. Все раскрывают навык.", "reveal_skill"),
-    ("⚠️ Обвал тоннеля", "Выход из бункера частично заблокирован. Следующий этап обсуждения сокращён до 90 секунд.", "timer_short"),
-    ("⚠️ Сигнал с поверхности", "Бункер поймал радиосигнал. Все игроки раскрывают факт.", "reveal_fact"),
-    ("⚠️ Неожиданный осмотр", "Система безопасности требует раскрыть рюкзак у всех живых игроков.", "reveal_backpack"),
-    ("⚠️ Спор за лидерство", "Все живые игроки получают право один раз изменить свой голос до конца текущего голосования.", "revote"),
-    ("⚠️ Сбой системы доступа", "Один случайный живой игрок получает защиту от следующего голосования.", "random_shield"),
-    ("⚠️ Тайный склад", "Один случайный живой игрок получает дополнительный багаж.", "random_extra_baggage"),
 ]
 
 def code_id(length: int = 6) -> str:
@@ -296,7 +286,6 @@ class GameState:
     history: list[str] = field(default_factory=list)
     round_ends_at: Optional[float] = None
     current_event: str = ""
-    ai_enabled: bool = True
 
     def public_url(self, cfg: dict, token: str | None = None) -> str:
         base = (cfg.get("public_base_url") or "").rstrip("/")
@@ -412,7 +401,6 @@ class BunkerCog(commands.Cog):
                     voice_channel_id=g.get("voice_channel_id"), message_id=g.get("message_id"), round_index=int(g.get("round_index", 0)),
                     votes={int(k): int(v) for k, v in g.get("votes", {}).items()},
                     history=g.get("history", []), round_ends_at=g.get("round_ends_at"), current_event=g.get("current_event", ""),
-                    ai_enabled=bool(g.get("ai_enabled", self.cfg.get("ai_host_default", True))),
                 )
                 for pid, p in g.get("players", {}).items():
                     game.players[int(pid)] = PlayerState(
@@ -507,7 +495,7 @@ class BunkerCog(commands.Cog):
         gid = code_id()
         while gid in self.games:
             gid = code_id()
-        game = GameState(id=gid, guild_id=interaction.guild.id, channel_id=interaction.channel_id, host_id=interaction.user.id, max_players=players, ai_enabled=bool(self.cfg.get("ai_host_default", True)))
+        game = GameState(id=gid, guild_id=interaction.guild.id, channel_id=interaction.channel_id, host_id=interaction.user.id, max_players=players)
         self.games[gid] = game
         self.persist()
         embed = self.lobby_embed(game)
@@ -762,12 +750,7 @@ class BunkerCog(commands.Cog):
         losers = [pid for pid, n in counts.items() if n == max_votes]
         loser_id = random.choice(losers)
         loser = game.players.get(loser_id)
-        if loser and loser.card.get("_shield"):
-            loser.card["_shield"] = False
-            add_history(game, f"{loser.name} был защищён спецкартой и не выбыл")
-            if isinstance(ch, discord.TextChannel):
-                await ch.send(f"🛡️ **{loser.name}** защищён спецкартой и не выбывает.")
-        elif loser:
+        if loser:
             loser.alive = False
             add_history(game, f"Выгнан игрок: {loser.name}")
         game.votes = {}
@@ -827,56 +810,17 @@ class BunkerCog(commands.Cog):
             return
         stats = read_stats()
         alive_ids = {p.id for p in game.alive_players()}
-        season_name = self.current_season()
         for p in game.players.values():
             key = str(p.id)
-            rec = stats.get(key, {"name": p.name, "games": 0, "wins": 0, "losses": 0, "seasons": {}})
+            rec = stats.get(key, {"name": p.name, "games": 0, "wins": 0, "losses": 0})
             rec["name"] = p.name
             rec["games"] = int(rec.get("games", 0)) + 1
-            rec.setdefault("seasons", {})
-            srec = rec["seasons"].get(season_name, {"games": 0, "wins": 0, "losses": 0})
-            srec["games"] = int(srec.get("games", 0)) + 1
             if p.id in alive_ids:
                 rec["wins"] = int(rec.get("wins", 0)) + 1
-                srec["wins"] = int(srec.get("wins", 0)) + 1
             else:
                 rec["losses"] = int(rec.get("losses", 0)) + 1
-                srec["losses"] = int(srec.get("losses", 0)) + 1
-            rec["seasons"][season_name] = srec
             stats[key] = rec
         save_stats(stats)
-
-    async def apply_dynamic_event(self, game: GameState, title: str, desc: str, action: str) -> None:
-        if action == "places_plus" and game.places is not None:
-            game.places += 1
-        elif action == "places_minus" and game.places is not None:
-            game.places = max(1, game.places - 1)
-        elif action == "timer_short":
-            game.round_ends_at = time.time() + 90
-        elif action == "revote":
-            game.votes = {}
-        elif action == "random_shield":
-            alive = game.alive_players()
-            if alive:
-                target = random.choice(alive)
-                target.card["_shield"] = True
-                desc += f"\nЗащиту получил: {target.name}."
-        elif action == "random_extra_baggage":
-            alive = game.alive_players()
-            if alive:
-                target = random.choice(alive)
-                target.card["extra_baggage"] = choose_from_pack("baggage", ITEMS)
-                desc += f"\nДополнительный багаж получил: {target.name}."
-        elif action.startswith("reveal_"):
-            key = action.replace("reveal_", "")
-            for p in game.alive_players():
-                if key not in p.revealed:
-                    p.revealed.append(key)
-        ai_note = ""
-        if game.ai_enabled:
-            ai_note = "\n\n🧠 AI-ведущий: обсудите, кому это событие помогает, а кому мешает."
-        game.current_event = f"{title}\n{desc}{ai_note}"
-        add_history(game, f"Событие: {title}")
 
     async def trigger_event(self, interaction: discord.Interaction, game_id: str):
         game = self.games.get(game_id)
@@ -885,10 +829,20 @@ class BunkerCog(commands.Cog):
         if not self.is_host_or_admin(interaction.user, interaction.guild, game):
             return await interaction.response.send_message("Событие запускает ведущий или админ.", ephemeral=True)
         title, desc, action = random.choice(RANDOM_EVENTS)
-        await self.apply_dynamic_event(game, title, desc, action)
+        if action == "places_plus" and game.places is not None:
+            game.places += 1
+        elif action == "places_minus" and game.places is not None:
+            game.places = max(1, game.places - 1)
+        elif action.startswith("reveal_"):
+            key = action.replace("reveal_", "")
+            for p in game.alive_players():
+                if key not in p.revealed:
+                    p.revealed.append(key)
+        game.current_event = f"{title}\n{desc}"
+        add_history(game, f"Событие: {title}")
         self.persist()
         await self.refresh_message(game)
-        await interaction.response.send_message(embed=discord.Embed(title=title, description=game.current_event, color=0xFEE75C))
+        await interaction.response.send_message(embed=discord.Embed(title=title, description=desc, color=0xFEE75C))
 
     def apply_special_card(self, game: GameState, player: PlayerState) -> str:
         if player.special_used:
@@ -896,43 +850,7 @@ class BunkerCog(commands.Cog):
         text = str(player.card.get("special_card", ""))
         player.special_used = True
         low = text.lower()
-        alive_others = [p for p in game.alive_players() if p.id != player.id]
-
-        def random_other() -> PlayerState | None:
-            return random.choice(alive_others) if alive_others else None
-
-        if "иммунитет" in low or "защит" in low:
-            player.card["_shield"] = True
-            result = "получена защита от следующего голосования."
-        elif "узнать" in low or "подсмотреть" in low:
-            target = random_other()
-            if target:
-                hidden = [k for k, _ in ROUND_FIELDS if k not in target.revealed]
-                key = random.choice(hidden or ["profession"])
-                player.card["_peek"] = f"{target.name}: {self._field_map_ru().get(key, key)} — {self._field_value(target, key)}"
-                result = f"тайно подсмотрено: {player.card['_peek']}"
-            else:
-                result = "некого подсмотреть."
-        elif "украсть" in low or "забрать" in low:
-            target = random_other()
-            if target:
-                player.card["extra_baggage"] = target.card.get("baggage", "—")
-                target.card["baggage"] = choose_from_pack("baggage", ITEMS)
-                result = f"получен багаж игрока {target.name}; ему выдан новый случайный багаж."
-            else:
-                result = "некого выбрать для обмена."
-        elif "обмен" in low or "меняется" in low or "поменяться" in low:
-            target = random_other()
-            if target:
-                key = random.choice(["profession", "health", "hobby", "phobia", "baggage", "backpack", "fact"])
-                player.card[key], target.card[key] = target.card.get(key), player.card.get(key)
-                result = f"случайный обмен с {target.name}: {self._field_map_ru().get(key, key)}."
-            else:
-                result = "некого выбрать для обмена."
-        elif "отмен" in low and "голос" in low:
-            game.votes.pop(player.id, None)
-            result = "свой голос отменён."
-        elif "увелич" in low and "мест" in low and game.places is not None:
+        if "увелич" in low and "мест" in low and game.places is not None:
             game.places += 1
             result = "+1 место в бункере."
         elif "уменьш" in low and "мест" in low and game.places is not None:
@@ -940,40 +858,41 @@ class BunkerCog(commands.Cog):
             result = "-1 место в бункере."
         elif "дополнительный багаж" in low:
             player.card["extra_baggage"] = choose_from_pack("baggage", ITEMS)
-            result = f"получен дополнительный багаж: {player.card['extra_baggage']}"
+            result = f"Получен дополнительный багаж: {player.card['extra_baggage']}"
         elif "дополнительный рюкзак" in low:
             player.card["extra_backpack"] = choose_from_pack("backpacks", ITEMS)
-            result = f"получен дополнительный рюкзак: {player.card['extra_backpack']}"
-        elif "второй" in low and "факт" in low:
+            result = f"Получен дополнительный рюкзак: {player.card['extra_backpack']}"
+        elif "второй случайный факт" in low or "второй" in low and "факт" in low:
             player.card["extra_fact"] = choose_from_pack("facts", FACTS)
-            result = f"получен дополнительный факт: {player.card['extra_fact']}"
-        elif "второе" in low and "хобби" in low:
+            result = f"Получен дополнительный факт: {player.card['extra_fact']}"
+        elif "второе случайное хобби" in low or "второе" in low and "хобби" in low:
             player.card["extra_hobby"] = choose_from_pack("hobbies", HOBBIES)
-            result = f"получено второе хобби: {player.card['extra_hobby']}"
-        elif "вторую" in low and "профес" in low or "двух област" in low:
+            result = f"Получено второе хобби: {player.card['extra_hobby']}"
+        elif "вторую случайную профессию" in low or "двух област" in low:
             player.card["extra_profession"] = choose_from_pack("professions", PROFESSIONS)
-            result = f"получена вторая профессия: {player.card['extra_profession']}"
+            result = f"Получена вторая профессия: {player.card['extra_profession']}"
         elif "здоров" in low:
             player.card["health"] = choose_from_pack("health", HEALTH)
-            result = f"здоровье изменено: {player.card['health']}"
+            result = f"Здоровье изменено: {player.card['health']}"
         elif "фоби" in low:
             player.card["phobia"] = choose_from_pack("phobias", PHOBIAS)
-            result = f"фобия изменена: {player.card['phobia']}"
+            result = f"Фобия изменена: {player.card['phobia']}"
         elif "хобби" in low:
             player.card["hobby"] = choose_from_pack("hobbies", HOBBIES)
-            result = f"хобби изменено: {player.card['hobby']}"
+            result = f"Хобби изменено: {player.card['hobby']}"
         elif "багаж" in low:
             player.card["baggage"] = choose_from_pack("baggage", ITEMS)
-            result = f"багаж изменён: {player.card['baggage']}"
+            result = f"Багаж изменён: {player.card['baggage']}"
         elif "рюкзак" in low:
             player.card["backpack"] = choose_from_pack("backpacks", ITEMS)
-            result = f"рюкзак изменён: {player.card['backpack']}"
+            result = f"Рюкзак изменён: {player.card['backpack']}"
         elif "професс" in low:
             player.card["profession"] = choose_from_pack("professions", PROFESSIONS)
-            result = f"профессия изменена: {player.card['profession']}"
+            result = f"Профессия изменена: {player.card['profession']}"
         else:
+            # Универсальный эффект для сложных карт, которые требуют выбора игрока.
             player.card["extra_fact"] = choose_from_pack("facts", FACTS)
-            result = f"сложная карта применена как бонусный факт: {player.card['extra_fact']}"
+            result = f"Сложная карта применена как бонусный факт: {player.card['extra_fact']}"
         add_history(game, f"{player.name} использовал спецкарту")
         self.persist()
         return result
@@ -986,8 +905,6 @@ class BunkerCog(commands.Cog):
         app.router.add_get("/auth/discord/callback", self.web_discord_callback)
         app.router.add_get("/auth/logout", self.web_logout)
         app.router.add_get("/profile", self.web_profile)
-        app.router.add_get("/replay/{game_id}", self.web_replay)
-        app.router.add_get("/bunker_events/{game_id}", self.web_events)
         app.router.add_get("/bunker_api/{game_id}", self.web_api_game)
         app.router.add_post("/bunker_api/{game_id}/vote", self.web_api_vote)
         app.router.add_post("/bunker_api/{game_id}/special", self.web_api_special)
@@ -1018,8 +935,8 @@ class BunkerCog(commands.Cog):
         }
 
     async def web_discord_login(self, request: web.Request):
-        client_id = (os.getenv("DISCORD_CLIENT_ID") or str(self.cfg.get("discord_client_id") or "")).strip()
-        redirect_uri = (os.getenv("DISCORD_REDIRECT_URI") or str(self.cfg.get("discord_redirect_uri") or f"{self._public_base()}/auth/discord/callback")).strip()
+        client_id = str(self.cfg.get("discord_client_id") or "").strip()
+        redirect_uri = str(self.cfg.get("discord_redirect_uri") or f"{self._public_base()}/auth/discord/callback").strip()
         if not client_id:
             return web.Response(text="Discord OAuth не настроен: добавь discord_client_id в bunker_config.json", status=500)
         next_url = request.query.get("next") or "/"
@@ -1044,9 +961,9 @@ class BunkerCog(commands.Cog):
         code = request.query.get("code")
         if not code:
             return web.Response(text="Discord не вернул code", status=400)
-        client_id = (os.getenv("DISCORD_CLIENT_ID") or str(self.cfg.get("discord_client_id") or "")).strip()
-        client_secret = (os.getenv("DISCORD_CLIENT_SECRET") or str(self.cfg.get("discord_client_secret") or "")).strip()
-        redirect_uri = (os.getenv("DISCORD_REDIRECT_URI") or str(self.cfg.get("discord_redirect_uri") or f"{self._public_base()}/auth/discord/callback")).strip()
+        client_id = str(self.cfg.get("discord_client_id") or "").strip()
+        client_secret = str(self.cfg.get("discord_client_secret") or "").strip()
+        redirect_uri = str(self.cfg.get("discord_redirect_uri") or f"{self._public_base()}/auth/discord/callback").strip()
         if not client_id or not client_secret:
             return web.Response(text="Discord OAuth не настроен: нужен client_id и client_secret", status=500)
         async with ClientSession() as session:
@@ -1089,7 +1006,7 @@ class BunkerCog(commands.Cog):
         stats = self.user_stats(int(user["id"]))
         avatar = user.get("avatar") or "https://cdn.discordapp.com/embed/avatars/0.png"
         html = f"""<!doctype html><html lang=ru><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Профиль</title><style>
-body{{margin:0;background:radial-gradient(circle at 15% 0,#27325b,#070912 45%);color:#f7f8ff;font-family:Inter,Arial,sans-serif}}.wrap{{max-width:780px;margin:0 auto;padding:32px 18px}}.card{{background:linear-gradient(180deg,rgba(25,32,51,.94),rgba(14,18,31,.96));border:1px solid #303b58;border-radius:28px;padding:24px;box-shadow:0 20px 70px #0008}}.top{{display:flex;align-items:center;gap:18px}}img{{width:86px;height:86px;border-radius:50%;border:3px solid #7c5cff}}.muted{{color:#9aa6bd}}.stats{{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:22px}}.stat{{background:#202940;border:1px solid #303b58;border-radius:18px;padding:16px}}a{{color:#b7c4ff}}</style></head><body><div class=wrap><div class=card><div class=top><img src='{avatar}'><div><h1>{user['name']}</h1><div class=muted>Discord ID: {user['id']}</div></div></div><div class=stats><div class=stat><b>{stats['games']}</b><br><span class=muted>Игр всего</span></div><div class=stat><b>{stats['wins']}</b><br><span class=muted>Побед всего</span></div><div class=stat><b>{stats['winrate']}%</b><br><span class=muted>Выживаемость</span></div><div class=stat><b>{stats['season']}</b><br><span class=muted>Сезон</span></div><div class=stat><b>{stats['season_games']}</b><br><span class=muted>Игр сезон</span></div><div class=stat><b>{stats['season_wins']}</b><br><span class=muted>Побед сезон</span></div><div class=stat><b>{stats['season_winrate']}%</b><br><span class=muted>Выживаемость сезон</span></div></div><p><a href='/auth/logout?next=/'>Выйти</a></p></div></div></body></html>"""
+body{{margin:0;background:radial-gradient(circle at 15% 0,#27325b,#070912 45%);color:#f7f8ff;font-family:Inter,Arial,sans-serif}}.wrap{{max-width:780px;margin:0 auto;padding:32px 18px}}.card{{background:linear-gradient(180deg,rgba(25,32,51,.94),rgba(14,18,31,.96));border:1px solid #303b58;border-radius:28px;padding:24px;box-shadow:0 20px 70px #0008}}.top{{display:flex;align-items:center;gap:18px}}img{{width:86px;height:86px;border-radius:50%;border:3px solid #7c5cff}}.muted{{color:#9aa6bd}}.stats{{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:22px}}.stat{{background:#202940;border:1px solid #303b58;border-radius:18px;padding:16px}}a{{color:#b7c4ff}}</style></head><body><div class=wrap><div class=card><div class=top><img src='{avatar}'><div><h1>{user['name']}</h1><div class=muted>Discord ID: {user['id']}</div></div></div><div class=stats><div class=stat><b>{stats['games']}</b><br><span class=muted>Игр</span></div><div class=stat><b>{stats['wins']}</b><br><span class=muted>Побед</span></div><div class=stat><b>{stats['losses']}</b><br><span class=muted>Поражений</span></div><div class=stat><b>{stats['winrate']}%</b><br><span class=muted>Выживаемость</span></div></div><p><a href='/auth/logout?next=/'>Выйти</a></p></div></div></body></html>"""
         return web.Response(text=html, content_type="text/html")
 
     def _player_by_token(self, game: GameState, token: str | None) -> Optional[PlayerState]:
@@ -1137,8 +1054,21 @@ body{{margin:0;background:radial-gradient(circle at 15% 0,#27325b,#070912 45%);c
     async def web_home(self, request: web.Request):
         html = """<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ohae</title>
 <style>
-:root{--bg:#070912;--panel:#121827;--line:#283044;--muted:#9aa6bd;--text:#f7f8ff;--accent:#7c5cff;--accent2:#00d4ff}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,#26325b 0,#070912 48%),linear-gradient(135deg,#070912,#101524);color:var(--text);font-family:Inter,Arial,sans-serif}.wrap{max-width:1120px;margin:0 auto;padding:40px 20px}.hero{padding:34px;border:1px solid var(--line);border-radius:30px;background:linear-gradient(180deg,rgba(25,32,52,.88),rgba(13,17,29,.92));box-shadow:0 24px 80px #0009}.logo{font-size:46px;margin:0}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:20px}.card{background:rgba(18,24,39,.86);border:1px solid var(--line);border-radius:22px;padding:20px;transition:.15s}.card:hover{transform:translateY(-2px);border-color:#4c5a87}.pill{display:inline-block;background:linear-gradient(135deg,var(--accent),var(--accent2));padding:8px 12px;border-radius:999px;font-weight:800}a{color:#aebcff}</style></head><body><div class=wrap><div class=hero><div class=pill>Ohae Web</div><h1 class=logo>🌐 Панель модулей</h1><p class=muted>Красивый сайт для Discord-игр и модулей.</p><div class=grid><div class=card><h2>🏚️ Бункер</h2><p class=muted>Карточки игроков, голосования, спецкарты, таймеры, replay и статистика.</p></div><div class=card><h2>🎂 Birthday</h2><p class=muted>Поздравления и события дня рождения.</p></div><div class=card><h2>📊 Dashboard</h2><p class=muted>Управление сервером и модулями.</p></div></div></div></div></body></html>"""
+:root{{--bg:#070912;--panel:#101727;--panel2:#151e32;--soft:#1c2740;--line:#2d3a5c;--text:#f7f8ff;--muted:#9aa6bd;--accent:#7c5cff;--accent2:#00d4ff;--danger:#ff4d6d;--good:#35d07f;--warn:#ffd166;--shadow:0 18px 60px #0008}}
+*{{box-sizing:border-box}}body{{margin:0;min-height:100vh;background:radial-gradient(circle at 12% -8%,#28366c 0,#070912 46%),linear-gradient(135deg,#070912,#0c1020);color:var(--text);font-family:Inter,Arial,sans-serif}}
+.wrap{{width:100%;max-width:1880px;margin:0 auto;padding:20px 34px 34px}}.top{{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}}h1{{margin:0;font-size:34px;line-height:1}}h2{{margin:0 0 14px;font-size:22px}}h3{{margin:0 0 12px;font-size:18px}}.muted{{color:var(--muted)}}
+.badge,.mini-pill{{background:rgba(28,39,64,.86);border:1px solid var(--line);border-radius:999px;padding:9px 13px;color:#dbe4ff;white-space:nowrap}}.userbox{{display:flex;align-items:center;gap:10px;background:rgba(28,39,64,.86);border:1px solid var(--line);border-radius:999px;padding:7px 12px;color:var(--text);text-decoration:none}}.userbox img{{width:34px;height:34px;border-radius:50%}}.topright{{display:flex;align-items:center;gap:10px;flex-wrap:wrap}}
+.layout{{display:block}}.main-wide{{width:100%}}.panel,.player,.mycard,.field{{background:linear-gradient(180deg,rgba(21,30,50,.94),rgba(10,15,27,.96));border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:var(--shadow)}}
+.cat{{min-height:210px;background:linear-gradient(135deg,rgba(124,92,255,.24),rgba(18,24,39,.96) 45%,rgba(255,77,109,.14));position:relative;overflow:hidden;margin-bottom:14px}}.cat:after{{content:'☢';position:absolute;right:26px;bottom:-42px;font-size:170px;opacity:.06}}.cat-head{{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}}.timer{{font-size:54px;font-weight:950;color:var(--warn);letter-spacing:1px;line-height:1;margin-top:8px}}
+.quickbar{{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}}.quickbar .panel{{padding:14px 16px;border-radius:18px;box-shadow:none}}.quickbar b{{display:block;font-size:19px;margin-top:4px}}
+button{{background:linear-gradient(135deg,var(--accent),#5d77ff);color:white;border:0;border-radius:14px;padding:11px 14px;margin:4px;cursor:pointer;font-weight:850;box-shadow:0 8px 24px #0005}}button:hover{{filter:brightness(1.08)}}button:disabled{{opacity:.45;cursor:not-allowed}}button.danger{{background:linear-gradient(135deg,#ff4d6d,#c92a45)}}button.good{{background:linear-gradient(135deg,#22aa68,#35d07f)}}button.ghost{{background:#232c44}}
+.cards{{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:12px}}.mycard{{margin-bottom:14px;border-color:rgba(124,92,255,.55)}}.mycard .cards{{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}}.player{{padding:16px;border-radius:22px}}.player.alive{{border-color:rgba(53,208,127,.55)}}.player.dead{{opacity:.54}}.player-title{{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}}.player-fields{{display:grid;gap:8px}}
+.field{{padding:9px 12px;border-radius:14px;display:grid;grid-template-columns:118px 1fr;gap:10px;align-items:center;box-shadow:none;background:rgba(17,24,40,.9)}}.field b{{font-size:13px;color:#dce4ff}}.field span{{font-size:13px;overflow-wrap:anywhere}}.field.revealed{{border-color:rgba(53,208,127,.55)}}.field.hidden{{opacity:.75}}.field.clickable{{cursor:pointer}}.field.clickable:hover{{border-color:var(--accent2);transform:translateY(-1px)}}.field small{{display:none}}
+.vote-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}}.vote-card{{display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(28,39,64,.86);border:1px solid var(--line);border-radius:16px;padding:12px}}
+.drawer-btn{{position:fixed;right:24px;bottom:24px;z-index:60;border-radius:999px;padding:15px 19px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 18px 50px #000a}}.drawer-backdrop{{display:none;position:fixed;inset:0;background:#0009;z-index:70}}.drawer{{position:fixed;top:0;right:-430px;width:min(410px,92vw);height:100vh;background:#0b1020;border-left:1px solid var(--line);z-index:80;padding:18px;overflow:auto;transition:.22s;box-shadow:-18px 0 70px #000a}}body.drawer-open .drawer{{right:0}}body.drawer-open .drawer-backdrop{{display:block}}.drawer .panel{{margin-bottom:12px;box-shadow:none}}.drawer-close{{float:right;background:#232c44;margin:0 0 10px 10px}}
+.admin-grid{{display:grid;grid-template-columns:1fr 1fr;gap:8px}}.admin-grid button{{width:100%;margin:0}}.history{{max-height:360px;overflow:auto}}.history p{{margin:8px 0;color:#d9ddef;font-size:13px}}.theme-row{{display:flex;gap:8px;flex-wrap:wrap}}.theme-dot{{width:34px;height:34px;border-radius:50%;border:2px solid #fff3;cursor:pointer}}.nuclear{{--accent:#7c5cff;--accent2:#00d4ff}}.virus{{--accent:#25c26e;--accent2:#a3ff12}}.ice{{--accent:#54b6ff;--accent2:#c8f5ff}}.fire{{--accent:#ff7a18;--accent2:#ff2f5f}}.space{{--accent:#9b5cff;--accent2:#ff5cbb}}a{{color:#b7c4ff}}
+@media(max-width:760px){{.wrap{{padding:14px}}.top{{align-items:flex-start;flex-direction:column}}.cat-head{{flex-direction:column}}.timer{{font-size:42px}}.cards{{grid-template-columns:1fr}}.field{{grid-template-columns:104px 1fr}}.quickbar{{grid-template-columns:repeat(2,1fr)}}}}
+</style></head><body><div class=wrap><div class=hero><div class=pill>Ohae Web</div><h1 class=logo>🌐 Панель модулей</h1><p class=muted>Красивый сайт для Discord-игр и модулей.</p><div class=grid><div class=card><h2>🏚️ Бункер</h2><p class=muted>Карточки игроков, голосования, спецкарты, таймеры, replay и статистика.</p></div><div class=card><h2>🎂 Birthday</h2><p class=muted>Поздравления и события дня рождения.</p></div><div class=card><h2>📊 Dashboard</h2><p class=muted>Управление сервером и модулями.</p></div></div></div></div></body></html>"""
         return web.Response(text=html, content_type="text/html")
 
     async def web_game(self, request: web.Request):
@@ -1147,53 +1077,8 @@ body{{margin:0;background:radial-gradient(circle at 15% 0,#27325b,#070912 45%);c
         discord_user = self._discord_user_from_request(request)
         html = f"""<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Бункер {gid}</title>
 <style>
-:root{{--bg:#080b13;--panel:#111827;--panel2:#172033;--soft:#202940;--line:#2c3650;--text:#f7f8ff;--muted:#9aa6bd;--accent:#7c5cff;--accent2:#00d4ff;--danger:#ff4d6d;--good:#35d07f;--warn:#ffd166}}
-*{{box-sizing:border-box}}
-body{{margin:0;background:linear-gradient(180deg,#0b1020 0%,#070912 55%,#05070d 100%);color:var(--text);font-family:Inter,Arial,sans-serif;font-size:15px;line-height:1.45}}
-.wrap{{max-width:1500px;margin:0 auto;padding:18px}}
-.top{{position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;gap:12px;margin:-18px -18px 16px;padding:14px 18px;background:rgba(7,9,18,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}}
-h1{{margin:0;font-size:28px;letter-spacing:-.03em}}
-h2{{margin:0 0 12px;font-size:19px}}h3{{margin:0 0 10px;font-size:16px}}
-.badge{{background:rgba(32,41,64,.9);border:1px solid var(--line);border-radius:999px;padding:9px 13px;color:var(--muted);white-space:nowrap}}
-.userbox{{display:flex;align-items:center;gap:9px;background:rgba(32,41,64,.9);border:1px solid var(--line);border-radius:999px;padding:7px 11px;color:var(--text);text-decoration:none}}
-.userbox img{{width:32px;height:32px;border-radius:50%}}
-.topright{{display:flex;align-items:center;gap:9px;flex-wrap:wrap}}
-.grid{{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:16px;align-items:start}}
-main,aside{{min-width:0}}
-aside{{position:sticky;top:78px;display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 92px);overflow:auto;padding-right:4px}}
-.panel,.player,.mycard,.field{{background:rgba(17,24,39,.92);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 12px 32px rgba(0,0,0,.35)}}
-.panel,.mycard{{margin-bottom:12px}}
-.cat{{min-height:190px;background:linear-gradient(135deg,rgba(124,92,255,.22),rgba(17,24,39,.96) 48%,rgba(0,212,255,.10));position:relative;overflow:hidden}}
-.cat:after{{content:'☢';position:absolute;right:14px;bottom:-36px;font-size:150px;opacity:.045}}
-.muted{{color:var(--muted)}}
-button{{width:auto;background:linear-gradient(135deg,var(--accent),#5d77ff);color:white;border:0;border-radius:12px;padding:10px 12px;margin:3px;cursor:pointer;font-weight:800;box-shadow:0 8px 20px rgba(0,0,0,.28);transition:.12s}}
-button:hover{{filter:brightness(1.08);transform:translateY(-1px)}}button:disabled{{opacity:.45;cursor:not-allowed;transform:none}}
-button.danger{{background:linear-gradient(135deg,#ff4d6d,#c92a45)}}button.good{{background:linear-gradient(135deg,#22aa68,#35d07f)}}button.ghost{{background:#232c44}}
-.stat{{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}}
-.stat span{{background:rgba(32,41,64,.82);border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-size:14px}}
-.cards{{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:10px}}
-.mycard .cards{{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}}
-.field{{padding:12px;border-radius:14px;box-shadow:none;background:rgba(32,41,64,.62)}}
-.field b{{display:block;margin-bottom:5px;font-size:13px;color:#dce4ff}}
-.field span{{font-size:14px}}
-.field.revealed{{border-color:rgba(53,208,127,.55);background:rgba(24,60,48,.45)}}
-.field.hidden{{opacity:.72;background:rgba(25,31,47,.62)}}
-.field.clickable{{cursor:pointer;outline:1px solid rgba(124,92,255,.25)}}
-.field.clickable:hover{{border-color:var(--accent2);transform:translateY(-1px);background:rgba(36,47,76,.9)}}
-.player{{padding:14px;margin-bottom:10px}}
-.alive{{border-color:rgba(53,208,127,.45)}}.dead{{opacity:.55}}
-.history{{max-height:320px;overflow:auto}}
-.history p{{margin:7px 0;color:#d9ddef;font-size:14px}}
-.timer{{font-size:42px;font-weight:950;color:var(--warn);letter-spacing:1px;margin-top:10px}}
-.vote-card{{display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(32,41,64,.72);border:1px solid var(--line);border-radius:14px;padding:10px;margin:7px 0}}
-.admin-grid{{display:grid;grid-template-columns:1fr 1fr;gap:8px}}
-.admin-grid button{{width:100%;margin:0}}
-.theme-row{{display:flex;gap:8px;flex-wrap:wrap}}
-.theme-dot{{width:32px;height:32px;border-radius:50%;border:2px solid #fff3;cursor:pointer}}
-.nuclear{{--accent:#7c5cff;--accent2:#00d4ff}}.virus{{--accent:#25c26e;--accent2:#a3ff12}}.ice{{--accent:#54b6ff;--accent2:#c8f5ff}}.fire{{--accent:#ff7a18;--accent2:#ff2f5f}}.space{{--accent:#9b5cff;--accent2:#ff5cbb}}
-a{{color:#b7c4ff}}
-@media(max-width:1100px){{.grid{{grid-template-columns:1fr}}aside{{position:static;max-height:none;overflow:visible}}}}
-@media(max-width:640px){{.wrap{{padding:12px}}.top{{margin:-12px -12px 12px;padding:12px;align-items:flex-start;flex-direction:column}}h1{{font-size:25px}}.cards{{grid-template-columns:1fr}}.admin-grid{{grid-template-columns:1fr}}button{{width:100%;margin:4px 0}}.stat span{{width:100%}}}}
+:root{{--bg:#070912;--panel:#121827;--panel2:#192033;--soft:#202940;--line:#303b58;--text:#f7f8ff;--muted:#9aa6bd;--accent:#7c5cff;--accent2:#00d4ff;--danger:#ff4d6d;--good:#35d07f;--warn:#ffd166}}
+*{{box-sizing:border-box}}body{{margin:0;background:radial-gradient(circle at 10% -10%,#2c3766 0,#070912 48%),radial-gradient(circle at 100% 0,#371e42 0,#070912 35%);color:var(--text);font-family:Inter,Arial,sans-serif}}.wrap{{max-width:1440px;margin:0 auto;padding:22px}}.top{{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}}h1{{margin:0;font-size:34px}}.badge{{background:rgba(32,41,64,.86);border:1px solid var(--line);border-radius:999px;padding:10px 14px;color:var(--muted)}}.userbox{{display:flex;align-items:center;gap:10px;background:rgba(32,41,64,.86);border:1px solid var(--line);border-radius:999px;padding:8px 12px;color:var(--text);text-decoration:none}}.userbox img{{width:34px;height:34px;border-radius:50%}}.topright{{display:flex;align-items:center;gap:10px;flex-wrap:wrap}}.grid{{display:grid;grid-template-columns:1.35fr .65fr;gap:16px}}.panel,.player,.mycard,.field{{background:linear-gradient(180deg,rgba(25,32,51,.92),rgba(14,18,31,.94));border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:0 18px 55px #0007}}.cat{{min-height:250px;background:linear-gradient(135deg,rgba(124,92,255,.28),rgba(18,24,39,.95) 45%,rgba(255,77,109,.18));position:relative;overflow:hidden}}.cat:after{{content:'☢';position:absolute;right:18px;bottom:-34px;font-size:170px;opacity:.07}}.muted{{color:var(--muted)}}button{{background:linear-gradient(135deg,var(--accent),#5d77ff);color:white;border:0;border-radius:14px;padding:11px 14px;margin:5px;cursor:pointer;font-weight:800;box-shadow:0 8px 24px #0005}}button:hover{{filter:brightness(1.08)}}button:disabled{{opacity:.45;cursor:not-allowed}}button.danger{{background:linear-gradient(135deg,#ff4d6d,#c92a45)}}button.good{{background:linear-gradient(135deg,#22aa68,#35d07f)}}button.ghost{{background:#232c44}}.stat{{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}}.stat span{{background:rgba(32,41,64,.8);border:1px solid var(--line);border-radius:15px;padding:10px 12px}}.cards{{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}}.field{{padding:14px;border-radius:18px}}.field b{{display:block;margin-bottom:6px}}.field.revealed{{border-color:rgba(53,208,127,.55)}}.field.hidden{{opacity:.8}}.field.clickable{{cursor:pointer}}.field.clickable:hover{{border-color:var(--accent2);transform:translateY(-1px)}}.player{{padding:16px}}.alive{{border-color:rgba(53,208,127,.55)}}.dead{{opacity:.55}}.history{{max-height:380px;overflow:auto}}.history p{{margin:8px 0;color:#d9ddef}}.timer{{font-size:44px;font-weight:950;color:var(--warn);letter-spacing:1px;margin-top:8px}}.vote-card{{display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(32,41,64,.85);border:1px solid var(--line);border-radius:18px;padding:12px;margin:8px 0}}.admin-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}}.theme-row{{display:flex;gap:6px;flex-wrap:wrap}}.theme-dot{{width:34px;height:34px;border-radius:50%;border:2px solid #fff3;cursor:pointer}}.nuclear{{--accent:#7c5cff;--accent2:#00d4ff}}.virus{{--accent:#25c26e;--accent2:#a3ff12}}.ice{{--accent:#54b6ff;--accent2:#c8f5ff}}.fire{{--accent:#ff7a18;--accent2:#ff2f5f}}.space{{--accent:#9b5cff;--accent2:#ff5cbb}}a{{color:#b7c4ff}}@media(max-width:980px){{.grid{{grid-template-columns:1fr}}.top{{align-items:flex-start;flex-direction:column}}}}
 </style></head><body class="nuclear"><div class="wrap"><div class="top"><div><h1>🏚️ Бункер</h1><div class="muted">Game ID: {gid}</div></div><div class="topright"><div class="badge" id="topStatus">Загрузка...</div><div id="userTop"></div></div></div><div id="app">Загрузка...</div></div>
 <script>
 const GAME_ID = {json.dumps(gid)}; const TOKEN = {json.dumps(token)}; const DISCORD_USER = {json.dumps(discord_user, ensure_ascii=False)}; let last=null;
@@ -1205,65 +1090,42 @@ function tleft(ts){{ if(!ts)return '—'; const left=Math.max(0, Math.floor(ts-D
 function updateClock(){{ if(last){{ const el=document.getElementById('timer'); if(el) el.textContent=tleft(last.round_ends_at); const st=document.getElementById('topStatus'); if(st) st.textContent=`${{last.status}} • ${{last.players.length}}/${{last.max_players}} игроков`; }} const top=document.getElementById('userTop'); if(top){{ if(DISCORD_USER){{ const av=DISCORD_USER.avatar||'https://cdn.discordapp.com/embed/avatars/0.png'; top.innerHTML=`<a class="userbox" href="/profile"><img src="${{av}}"><span>${{esc(DISCORD_USER.name)}}</span></a>`; }} else {{ top.innerHTML=`<a class="userbox" href="/auth/discord/login?next=${{encodeURIComponent(location.pathname+location.search)}}">Войти через Discord</a>`; }} }} }}
 function setTheme(t){{ document.body.className=t; localStorage.setItem('bunker_theme',t); }}
 function themePanel(){{return `<div class=panel><h2>🎨 Тема</h2><div class=theme-row><div class=theme-dot style="background:linear-gradient(135deg,#7c5cff,#00d4ff)" onclick="setTheme('nuclear')"></div><div class=theme-dot style="background:linear-gradient(135deg,#25c26e,#a3ff12)" onclick="setTheme('virus')"></div><div class=theme-dot style="background:linear-gradient(135deg,#54b6ff,#c8f5ff)" onclick="setTheme('ice')"></div><div class=theme-dot style="background:linear-gradient(135deg,#ff7a18,#ff2f5f)" onclick="setTheme('fire')"></div><div class=theme-dot style="background:linear-gradient(135deg,#9b5cff,#ff5cbb)" onclick="setTheme('space')"></div></div></div>`}}
-function fieldHtml(k, title, val, clickable, revealed){{return `<div class="field ${{revealed?'revealed':'hidden'}} ${{clickable?'clickable':''}}" ${{clickable?`onclick="api('reveal',{{field:'${{k}}'}})"`:''}}><b>${{esc(title)}}</b><span class=muted>${{esc(val)}}</span>${{clickable?'<br><small>Нажми, чтобы раскрыть</small>':''}}</div>`}}
-function myCard(d){{ if(!d.me) return '<div class=panel><h2>👤 Моя карточка</h2><p class=muted>Войди через Discord, чтобы открыть свою карточку.</p></div>'; let html='<div class=mycard><h2>👤 Моя карточка</h2><div class=cards>'; for(const [k,title] of Object.entries(fieldTitles)){{ const val=d.me.card[title]??'—'; const rev=d.me.revealed_keys.includes(k); const clickable=d.me.alive && d.status!='ended' && !rev; html+=fieldHtml(k,title,val,clickable,rev); }} html+='</div></div>'; return html; }}
-function publicPlayerCard(p){{ let fields=Object.entries(p.card||{{}}).map(([k,v])=>`<div class="field ${{v==='Не раскрывал'?'hidden':'revealed'}}"><b>${{esc(k)}}</b><span class=muted>${{esc(v)}}</span></div>`).join(''); return `<div class="player ${{p.alive?'alive':'dead'}}"><h3>${{p.alive?'✅':'❌'}} ${{esc(p.name)}}</h3><div class=cards>${{fields}}</div></div>` }}
-function adminPanel(d){{ if(!d.is_host) return ''; return `<div class=panel><h2>🎛️ Панель ведущего</h2><div class=admin-grid><button onclick="api('admin',{{action:'next_round'}})">Новый этап</button><button onclick="api('admin',{{action:'vote'}})" class=danger>Голосование</button><button onclick="api('admin',{{action:'event'}})" class=good>Событие</button><button onclick="api('admin',{{action:'finish_vote'}})" class=ghost>Итог голос.</button><button onclick="api('admin',{{action:'end'}})" class=danger>Закончить</button></div><p class=muted>Панель ведущего. Основные действия вынесены наверх, игроки сами раскрывают категории на сайте.</p></div>` }}
+function fieldHtml(k, title, val, clickable, revealed){{return `<div class="field ${{revealed?'revealed':'hidden'}} ${{clickable?'clickable':''}}" ${{clickable?`onclick="api('reveal',{{field:'${{k}}'}})"`:''}}><b>${{esc(title)}}</b><span class=muted>${{esc(val)}}</span>${{clickable?'<small>Нажми, чтобы раскрыть</small>':''}}</div>`}}
+function myCard(d){{ if(!d.me) return '<div class=panel><h2>👤 Моя карточка</h2><p class=muted>Войди через Discord, чтобы увидеть свою карточку.</p></div>'; let html='<div class=mycard><h2>👤 Моя карточка — нажми на поле, чтобы раскрыть</h2><div class=cards>'; for(const [k,title] of Object.entries(fieldTitles)){{ const val=d.me.card[title]??'—'; const rev=d.me.revealed_keys.includes(k); const clickable=d.me.alive && d.status!='ended' && !rev; html+=fieldHtml(k,title,val,clickable,rev); }} html+='</div></div>'; return html; }}
+function publicPlayerCard(p){{ let fields=Object.entries(p.card||{{}}).map(([k,v])=>`<div class="field ${{v==='Не раскрывал'?'hidden':'revealed'}}"><b>${{esc(k)}}</b><span class=muted>${{esc(v)}}</span></div>`).join(''); return `<div class="player ${{p.alive?'alive':'dead'}}"><div class=player-title><h3>${{p.alive?'✅':'❌'}} ${{esc(p.name)}}</h3><span class=mini-pill>${{p.alive?'В игре':'Выбыл'}}</span></div><div class=player-fields>${{fields}}</div></div>` }}
+function adminPanel(d){{ if(!d.is_host) return ''; return `<div class=panel><h2>🎛️ Панель ведущего</h2><div class=admin-grid><button onclick="api('admin',{{action:'next_round'}})">Новый этап</button><button onclick="api('admin',{{action:'vote'}})" class=danger>Голосование</button><button onclick="api('admin',{{action:'event'}})" class=good>Событие</button><button onclick="api('admin',{{action:'finish_vote'}})" class=ghost>Итог голос.</button><button onclick="api('admin',{{action:'end'}})" class=danger>Закончить</button></div><p class=muted>Эта панель видна только ведущему. Игроки раскрывают любые категории сами на сайте.</p></div>` }}
 function presenterPanel(d){{ if(!d.is_host) return ''; return `<div class=panel><h2>🖥️ Экран ведущего</h2><p>Живых: <b>${{d.players.filter(p=>p.alive).length}}</b> • Мест: <b>${{d.places??'?'}}</b> • Голосов: <b>${{d.votes_count||0}}</b></p><p class=muted>Все раскрытые карточки обновляются автоматически.</p></div>` }}
+function openDrawer(){{document.body.classList.add('drawer-open')}}
+function closeDrawer(){{document.body.classList.remove('drawer-open')}}
 function render(d){{ if(d.error){{document.getElementById('app').innerHTML=`<div class=panel>Ошибка: ${{esc(d.error)}}</div>`;return;}} if(localStorage.getItem('bunker_theme')) setTheme(localStorage.getItem('bunker_theme'));
-let vote = d.can_vote ? `<div class=panel><h2>🗳️ Голосование</h2>${{d.players.filter(p=>p.alive && (!d.me || p.id!==d.me.id)).map(p=>`<div class=vote-card><div>👤 <b>${{esc(p.name)}}</b><br><span class=muted>${{esc(p.card?.['Профессия']||'Не раскрывал профессию')}}</span></div><button class=danger onclick="api('vote',{{target_id:'${{p.id}}'}})">Голосовать</button></div>`).join('')}}</div>` : '';
-let players = `<div class=panel><h2>👥 Карточки игроков</h2><p class=muted>Если игрок ничего не раскрыл — будет написано «Не раскрывал».</p><div class=cards>${{d.players.map(publicPlayerCard).join('')}}</div></div>`;
-let histItems=(d.history||[]).slice(-40).reverse(); let hist = `<div class=panel history><h2>📜 Replay / История</h2>${{histItems.map(x=>`<p>${{esc(x)}}</p>`).join('') || '<p class=muted>Событий пока нет.</p>'}}</div>`;
+let vote = d.can_vote ? `<div class=panel><h2>🗳️ Голосование</h2><div class=vote-grid>${{d.players.filter(p=>p.alive && (!d.me || p.id!==d.me.id)).map(p=>`<div class=vote-card><div>👤 <b>${{esc(p.name)}}</b><br><span class=muted>${{esc(p.card?.['Профессия']||'Не раскрывал профессию')}}</span></div><button class=danger onclick="api('vote',{{target_id:'${{p.id}}'}})">Голосовать</button></div>`).join('')}}</div></div>` : '';
+let players = `<div class=panel><h2>👥 Карточки игроков</h2><p class=muted>Раскрытые поля обновляются автоматически. Скрытые поля показываются как «Не раскрывал».</p><div class=cards>${{d.players.map(publicPlayerCard).join('')}}</div></div>`;
+let histItems=(d.history||[]).slice(-60).reverse(); let hist = `<div class=panel history><h2>📜 Replay / История</h2>${{histItems.map(x=>`<p>${{esc(x)}}</p>`).join('') || '<p class=muted>Событий пока нет.</p>'}}</div>`;
 let event = d.current_event ? `<div class=panel><h2>⚠️ Событие</h2><p>${{esc(d.current_event)}}</p></div>` : '';
 let stats = d.me?.stats ? `<div class=panel><h2>🏆 Профиль</h2><p>Игр: <b>${{d.me.stats.games}}</b></p><p>Побед: <b>${{d.me.stats.wins}}</b></p><p>Поражений: <b>${{d.me.stats.losses}}</b></p><p>Выживаемость: <b>${{d.me.stats.winrate}}%</b></p></div>` : '';
 let special = d.me ? `<div class=panel><h2>🃏 Спецкарта</h2><p>${{esc(d.me.card['Спецкарта'])}}</p><button class=good onclick="api('special')" ${{d.me.special_used?'disabled':''}}>${{d.me.special_used?'Уже использована':'Использовать'}}</button></div>` : '';
-document.getElementById('app').innerHTML=`<div class=grid><main><div class="panel cat"><h2>${{esc(d.catastrophe.title||'Ожидание старта')}}</h2><p>${{esc(d.catastrophe.desc||'')}}</p><div class=stat><span>Статус: <b>${{esc(d.status)}}</b></span><span>Игроков: <b>${{d.players.length}}/${{d.max_players}}</b></span><span>Мест: <b>${{d.places??'?'}}</b></span><span>Шанс: <b>${{d.survival_rate?Math.round(d.survival_rate*100)+'%':'?'}}</b></span><span>Voice: <b>${{d.voice.online}}/${{d.voice.allowed}}</b></span><span>AI: <b>${{d.ai_enabled?'ON':'OFF'}}</b></span><span>Сезон: <b>${{esc(d.season)}}</b></span></div><p class=muted>Проблема бункера: ${{esc(d.bunker_problem||'будет выбрана при старте')}}</p><div class=timer id=timer>${{tleft(d.round_ends_at)}}</div></div>${{presenterPanel(d)}}${{myCard(d)}}${{players}}${{vote}}</main><aside>${{adminPanel(d)}}${{event}}${{special}}${{stats}}${{themePanel()}}${{hist}}</aside></div>`; }}
-load();
-if (!!window.EventSource) {{ const es = new EventSource(`/bunker_events/${{GAME_ID}}`); es.onmessage = () => load(); es.onerror = () => {{}}; }} else {{ setInterval(load, 3000); }}
-setInterval(updateClock, 1000);
+let admin = adminPanel(d); let presenter = presenterPanel(d);
+let quick = `<div class=quickbar><div class=panel>Статус<b>${{esc(d.status)}}</b></div><div class=panel>Игроки<b>${{d.players.length}}/${{d.max_players}}</b></div><div class=panel>Мест<b>${{d.places??'?'}}</b></div><div class=panel>Шанс<b>${{d.survival_rate?Math.round(d.survival_rate*100)+'%':'?'}}</b></div><div class=panel>Voice<b>${{d.voice.online}}/${{d.voice.allowed}}</b></div></div>`;
+document.getElementById('app').innerHTML=`<div class=layout><main class=main-wide><div class="panel cat"><div class=cat-head><div><h2>${{esc(d.catastrophe.title||'Ожидание старта')}}</h2><p>${{esc(d.catastrophe.desc||'')}}</p></div><div class=timer id=timer>${{tleft(d.round_ends_at)}}</div></div>${{quick}}<p class=muted>Проблема бункера: ${{esc(d.bunker_problem||'будет выбрана при старте')}}</p></div>${{myCard(d)}}${{vote}}${{players}}</main><button class=drawer-btn onclick="openDrawer()">☰ Панель игры</button><div class=drawer-backdrop onclick="closeDrawer()"></div><aside class=drawer><button class=drawer-close onclick="closeDrawer()">✕</button><h2>☰ Панель игры</h2>${{admin}}${{presenter}}${{event}}${{special}}${{stats}}${{themePanel()}}${{hist}}</aside></div>`; }}
+load(); setInterval(load, 3000); setInterval(updateClock, 1000);
 </script></body></html>"""
         return web.Response(text=html, content_type="text/html")
 
     def voice_status(self, game: GameState) -> dict[str, Any]:
         guild = self.bot.get_guild(game.guild_id)
         online = 0
-        names: list[str] = []
-        missing: list[str] = []
         if guild and game.voice_channel_id:
             vc = guild.get_channel(game.voice_channel_id)
             if isinstance(vc, discord.VoiceChannel):
                 ids = {m.id for m in vc.members}
-                for p in game.players.values():
-                    if p.id in ids:
-                        online += 1
-                        names.append(p.name)
-                    else:
-                        missing.append(p.name)
-        else:
-            missing = [p.name for p in game.players.values()]
-        return {"online": online, "allowed": len(game.players), "names": names, "missing": missing}
-
-    def current_season(self) -> str:
-        custom = str(self.cfg.get("season_name") or "").strip()
-        if custom:
-            return custom
-        return time.strftime("%Y-%m")
+                online = sum(1 for p in game.players.values() if p.id in ids)
+        return {"online": online, "allowed": len(game.players)}
 
     def user_stats(self, user_id: int) -> dict[str, Any]:
-        rec = read_stats().get(str(user_id), {"games": 0, "wins": 0, "losses": 0, "seasons": {}})
+        rec = read_stats().get(str(user_id), {"games": 0, "wins": 0, "losses": 0})
         games = int(rec.get("games", 0))
         wins = int(rec.get("wins", 0))
-        season_name = self.current_season()
-        srec = (rec.get("seasons") or {}).get(season_name, {"games": 0, "wins": 0, "losses": 0})
-        sgames = int(srec.get("games", 0))
-        swins = int(srec.get("wins", 0))
-        return {
-            "games": games, "wins": wins, "losses": int(rec.get("losses", 0)),
-            "winrate": round((wins / games) * 100) if games else 0,
-            "season": season_name, "season_games": sgames, "season_wins": swins,
-            "season_losses": int(srec.get("losses", 0)),
-            "season_winrate": round((swins / sgames) * 100) if sgames else 0,
-        }
+        return {"games": games, "wins": wins, "losses": int(rec.get("losses", 0)), "winrate": round((wins / games) * 100) if games else 0}
 
     async def _send_channel_notice(self, game: GameState, text: str = "", embed: discord.Embed | None = None):
         ch = self.bot.get_channel(game.channel_id)
@@ -1272,57 +1134,6 @@ setInterval(updateClock, 1000);
                 await ch.send(content=text or None, embed=embed)
             except Exception:
                 pass
-
-    async def web_events(self, request: web.Request):
-        game = self.games.get(request.match_info["game_id"])
-        if not game:
-            return web.Response(text="game_not_found", status=404)
-        resp = web.StreamResponse(status=200, headers={
-            "Content-Type": "text/event-stream",
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-        })
-        await resp.prepare(request)
-        last_payload = ""
-        try:
-            while True:
-                payload = json.dumps({
-                    "ts": time.time(), "status": game.status, "history_len": len(game.history),
-                    "votes": len(game.votes), "alive": len(game.alive_players()),
-                    "round_ends_at": game.round_ends_at, "event": game.current_event,
-                }, ensure_ascii=False)
-                if payload != last_payload:
-                    await resp.write(f"data: {payload}\n\n".encode("utf-8"))
-                    last_payload = payload
-                await asyncio.sleep(1)
-        except (asyncio.CancelledError, ConnectionResetError, RuntimeError):
-            pass
-        return resp
-
-    async def web_replay(self, request: web.Request):
-        game = self.games.get(request.match_info["game_id"])
-        if not game:
-            return web.Response(text="Replay не найден", status=404)
-        players_html = "".join(
-            f"<div class='card'><h3>{'✅' if p.alive else '❌'} {p.name}</h3>" +
-            "".join(f"<p><b>{self._field_map_ru().get(k,k)}:</b> {self._field_value(p,k)}</p>" for k,_ in ROUND_FIELDS) +
-            "</div>" for p in game.players.values()
-        )
-        hist = "".join(f"<p>{h}</p>" for h in game.history)
-        html = f"""<!doctype html><html lang=ru><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Replay {game.id}</title><style>body{{margin:0;background:#070912;color:#f7f8ff;font-family:Arial,sans-serif}}.wrap{{max-width:1200px;margin:auto;padding:24px}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}}.card{{background:#151d31;border:1px solid #303b58;border-radius:18px;padding:16px}}.hist{{background:#101827;border-radius:18px;padding:16px;margin:14px 0}}a{{color:#b7c4ff}}</style></head><body><div class=wrap><a href='/bunker/{game.id}'>← Назад к игре</a><h1>📜 Replay Бункера {game.id}</h1><div class=hist><h2>История</h2>{hist or '<p>История пустая</p>'}</div><h2>Карточки игроков</h2><div class=grid>{players_html}</div></div></body></html>"""
-        return web.Response(text=html, content_type="text/html")
-
-    def season_leaderboard(self, limit: int = 10) -> list[dict[str, Any]]:
-        season_name = self.current_season()
-        rows = []
-        for uid, rec in read_stats().items():
-            srec = (rec.get("seasons") or {}).get(season_name, {})
-            games = int(srec.get("games", 0))
-            wins = int(srec.get("wins", 0))
-            if games:
-                rows.append({"id": uid, "name": rec.get("name", uid), "games": games, "wins": wins, "winrate": round(wins / games * 100)})
-        rows.sort(key=lambda r: (r["wins"], r["winrate"], r["games"]), reverse=True)
-        return rows[:limit]
 
     async def web_api_game(self, request: web.Request):
         game = self.games.get(request.match_info["game_id"])
@@ -1344,9 +1155,7 @@ setInterval(updateClock, 1000);
             "catastrophe": {"title": game.catastrophe_title, "desc": game.catastrophe_desc},
             "players": players, "can_vote": bool(me and me.alive and game.status == "voting"),
             "votes_count": len(game.votes), "history": game.history, "round_ends_at": game.round_ends_at,
-            "current_event": game.current_event, "voice": self.voice_status(game), "ai_enabled": game.ai_enabled,
-            "replay_url": f"/replay/{game.id}", "season": self.current_season(),
-            "leaderboard": self.season_leaderboard(),
+            "current_event": game.current_event, "voice": self.voice_status(game),
             "is_host": self._is_web_host(game, me), "me": None,
         }
         if me:
@@ -1423,16 +1232,18 @@ setInterval(updateClock, 1000);
             return web.json_response({"ok": True})
         elif action == "event":
             title, desc, effect = random.choice(RANDOM_EVENTS)
-            await self.apply_dynamic_event(game, title, desc, effect)
-            await self._send_channel_notice(game, embed=discord.Embed(title=title, description=game.current_event, color=0xFEE75C))
-        elif action == "ai_toggle":
-            game.ai_enabled = not game.ai_enabled
-            add_history(game, f"AI-ведущий {'включён' if game.ai_enabled else 'выключен'}")
-        elif action == "move_voice":
-            guild = self.bot.get_guild(game.guild_id)
-            if guild:
-                await self.create_voice_and_move(guild, game)
-            add_history(game, "Ведущий обновил закрытый voice и перенос игроков")
+            if effect == "places_plus" and game.places is not None:
+                game.places += 1
+            elif effect == "places_minus" and game.places is not None:
+                game.places = max(1, game.places - 1)
+            elif effect.startswith("reveal_"):
+                key = effect.replace("reveal_", "")
+                for p in game.alive_players():
+                    if key not in p.revealed:
+                        p.revealed.append(key)
+            game.current_event = f"{title}\n{desc}"
+            add_history(game, f"Событие: {title}")
+            await self._send_channel_notice(game, embed=discord.Embed(title=title, description=desc, color=0xFEE75C))
         elif action == "end":
             await self.end_game_by_state(game, manual=True)
             return web.json_response({"ok": True})
