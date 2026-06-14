@@ -11,5 +11,9 @@
   "move_players_to_voice": true,
   "keep_eliminated_in_voice": true,
   "delete_voice_on_end": true,
-  "embed_color": 5793266
+  "embed_color": 5793266,
+  "discord_oauth_enabled": true,
+  "discord_client_id": "1514060686458884206",
+  "discord_client_secret": "LBH8l91FEQcZWLRsJTmwDH6NaYiD7oQh",
+  "discord_redirect_uri": "https://ohae.bothost.tech/auth/discord/callback"
 }

@@ -3,16 +3,18 @@ from __future__ import annotations
 import asyncio
 import json
 import math
+import os
 import random
 import secrets
 import time
+import urllib.parse
 import string
 from dataclasses import dataclass, asdict, field
 from pathlib import Path
 from typing import Optional, Any
 
 import discord
-from aiohttp import web
+from aiohttp import web, ClientSession
 from discord import app_commands
 from discord.ext import commands
 
@@ -41,6 +43,10 @@ DEFAULT_CFG = {
     "ai_catastrophes": True,
     "random_events_enabled": True,
     "stats_enabled": True,
+    "discord_oauth_enabled": True,
+    "discord_client_id": "",
+    "discord_client_secret": "",
+    "discord_redirect_uri": "https://ohae.bothost.tech/auth/discord/callback",
 }
 
 PROFESSIONS = [
@@ -325,9 +331,9 @@ class BunkerGameView(discord.ui.View):
         self.cog = cog
         self.game_id = game_id
 
-    @discord.ui.button(label="Раскрыть раунд", style=discord.ButtonStyle.primary, emoji="🃏")
+    @discord.ui.button(label="Новый этап", style=discord.ButtonStyle.primary, emoji="⏭️")
     async def reveal_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.cog.reveal_round(interaction, self.game_id)
+        await self.cog.next_stage(interaction, self.game_id)
 
     @discord.ui.button(label="Голосование", style=discord.ButtonStyle.danger, emoji="🗳️")
     async def vote_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -444,8 +450,7 @@ class BunkerCog(commands.Cog):
         if game.survival_rate:
             e.add_field(name="Шанс выживания", value=f"{round(game.survival_rate * 100)}%", inline=True)
         e.add_field(name="Проблема бункера", value=game.bunker_problem or "неизвестно", inline=True)
-        field_key, field_name = game.current_round()
-        e.add_field(name="Текущий раунд", value=field_name, inline=True)
+        e.add_field(name="Формат", value="Игроки сами выбирают, что раскрывать", inline=True)
         e.add_field(name="Сайт", value=game.public_url(self.cfg), inline=False)
         if game.current_event:
             e.add_field(name="Событие", value=game.current_event[:1024], inline=False)
@@ -660,6 +665,20 @@ class BunkerCog(commands.Cog):
                 await user.send(embed=self.private_card_embed(game, p))
             except Exception:
                 pass
+
+
+    async def next_stage(self, interaction: discord.Interaction, game_id: str):
+        game = self.games.get(game_id)
+        if not game or game.status not in ("started", "voting"):
+            return await interaction.response.send_message("Игра не запущена.", ephemeral=True)
+        if not self.is_host_or_admin(interaction.user, interaction.guild, game):
+            return await interaction.response.send_message("Новый этап может включить ведущий или админ.", ephemeral=True)
+        game.status = "started"
+        game.round_ends_at = time.time() + int(self.cfg.get("round_seconds", 180))
+        add_history(game, "Ведущий начал новый этап обсуждения")
+        self.persist()
+        await self.refresh_message(game)
+        await interaction.response.send_message("⏭️ Новый этап обсуждения начался. Игроки сами выбирают, что раскрыть на сайте.", ephemeral=True)
 
     async def reveal_round(self, interaction: discord.Interaction, game_id: str):
         game = self.games.get(game_id)
@@ -883,6 +902,10 @@ class BunkerCog(commands.Cog):
         app = web.Application()
         app.router.add_get("/", self.web_home)
         app.router.add_get("/bunker/{game_id}", self.web_game)
+        app.router.add_get("/auth/discord/login", self.web_discord_login)
+        app.router.add_get("/auth/discord/callback", self.web_discord_callback)
+        app.router.add_get("/auth/logout", self.web_logout)
+        app.router.add_get("/profile", self.web_profile)
         app.router.add_get("/bunker_api/{game_id}", self.web_api_game)
         app.router.add_post("/bunker_api/{game_id}/vote", self.web_api_vote)
         app.router.add_post("/bunker_api/{game_id}/special", self.web_api_special)
@@ -894,6 +917,114 @@ class BunkerCog(commands.Cog):
         await self.web_site.start()
         print(f"[Bunker] web started on {self.cfg.get('web_host')}:{self.cfg.get('web_port')}")
 
+
+    def _public_base(self) -> str:
+        base = (self.cfg.get("public_base_url") or "").rstrip("/")
+        if not base:
+            port = int(self.cfg.get("web_port", 50227))
+            base = f"http://localhost:{port}"
+        return base
+
+    def _discord_user_from_request(self, request: web.Request) -> dict[str, str] | None:
+        uid = request.cookies.get("bunker_discord_id")
+        if not uid:
+            return None
+        return {
+            "id": uid,
+            "name": request.cookies.get("bunker_discord_name", "Discord User"),
+            "avatar": request.cookies.get("bunker_discord_avatar", ""),
+        }
+
+    async def web_discord_login(self, request: web.Request):
+        client_id = (
+            os.getenv("DISCORD_CLIENT_ID")
+            or str(self.cfg.get("discord_client_id") or "").strip()
+        )
+        redirect_uri = (
+            os.getenv("DISCORD_REDIRECT_URI")
+            or str(self.cfg.get("discord_redirect_uri") or f"{self._public_base()}/auth/discord/callback").strip()
+        )
+        if not client_id:
+            return web.Response(text="Discord OAuth не настроен: добавь DISCORD_CLIENT_ID в переменные окружения или discord_client_id в bunker_config.json", status=500)
+        next_url = request.query.get("next") or "/"
+        state = secrets.token_urlsafe(16)
+        params = {
+            "client_id": client_id,
+            "redirect_uri": redirect_uri,
+            "response_type": "code",
+            "scope": "identify",
+            "state": state,
+            "prompt": "none",
+        }
+        url = "https://discord.com/oauth2/authorize?" + urllib.parse.urlencode(params)
+        resp = web.HTTPFound(url)
+        resp.set_cookie("bunker_oauth_state", state, max_age=600, httponly=True, secure=True, samesite="Lax")
+        resp.set_cookie("bunker_oauth_next", next_url, max_age=600, httponly=True, secure=True, samesite="Lax")
+        raise resp
+
+    async def web_discord_callback(self, request: web.Request):
+        if request.query.get("state") != request.cookies.get("bunker_oauth_state"):
+            return web.Response(text="OAuth state mismatch", status=400)
+        code = request.query.get("code")
+        if not code:
+            return web.Response(text="Discord не вернул code", status=400)
+        client_id = (
+            os.getenv("DISCORD_CLIENT_ID")
+            or str(self.cfg.get("discord_client_id") or "").strip()
+        )
+        client_secret = (
+            os.getenv("DISCORD_CLIENT_SECRET")
+            or str(self.cfg.get("discord_client_secret") or "").strip()
+        )
+        redirect_uri = (
+            os.getenv("DISCORD_REDIRECT_URI")
+            or str(self.cfg.get("discord_redirect_uri") or f"{self._public_base()}/auth/discord/callback").strip()
+        )
+        if not client_id or not client_secret:
+            return web.Response(text="Discord OAuth не настроен: нужен DISCORD_CLIENT_ID и DISCORD_CLIENT_SECRET в переменных окружения или конфиге", status=500)
+        async with ClientSession() as session:
+            token_resp = await session.post("https://discord.com/api/oauth2/token", data={
+                "client_id": client_id,
+                "client_secret": client_secret,
+                "grant_type": "authorization_code",
+                "code": code,
+                "redirect_uri": redirect_uri,
+            }, headers={"Content-Type": "application/x-www-form-urlencoded"})
+            token_data = await token_resp.json()
+            access_token = token_data.get("access_token")
+            if not access_token:
+                return web.Response(text=f"Discord OAuth error: {token_data}", status=400)
+            user_resp = await session.get("https://discord.com/api/users/@me", headers={"Authorization": f"Bearer {access_token}"})
+            user_data = await user_resp.json()
+        uid = str(user_data.get("id", ""))
+        username = str(user_data.get("global_name") or user_data.get("username") or "Discord User")
+        avatar_hash = user_data.get("avatar")
+        avatar = f"https://cdn.discordapp.com/avatars/{uid}/{avatar_hash}.png?size=128" if uid and avatar_hash else ""
+        next_url = request.cookies.get("bunker_oauth_next") or "/"
+        resp = web.HTTPFound(next_url)
+        resp.set_cookie("bunker_discord_id", uid, max_age=60*60*24*30, httponly=False, secure=True, samesite="Lax")
+        resp.set_cookie("bunker_discord_name", username, max_age=60*60*24*30, httponly=False, secure=True, samesite="Lax")
+        resp.set_cookie("bunker_discord_avatar", avatar, max_age=60*60*24*30, httponly=False, secure=True, samesite="Lax")
+        resp.del_cookie("bunker_oauth_state")
+        resp.del_cookie("bunker_oauth_next")
+        raise resp
+
+    async def web_logout(self, request: web.Request):
+        resp = web.HTTPFound(request.query.get("next") or "/")
+        for name in ("bunker_discord_id", "bunker_discord_name", "bunker_discord_avatar"):
+            resp.del_cookie(name)
+        raise resp
+
+    async def web_profile(self, request: web.Request):
+        user = self._discord_user_from_request(request)
+        if not user:
+            return web.HTTPFound("/auth/discord/login?next=/profile")
+        stats = self.user_stats(int(user["id"]))
+        avatar = user.get("avatar") or "https://cdn.discordapp.com/embed/avatars/0.png"
+        html = f"""<!doctype html><html lang=ru><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Профиль</title><style>
+body{{margin:0;background:radial-gradient(circle at 15% 0,#27325b,#070912 45%);color:#f7f8ff;font-family:Inter,Arial,sans-serif}}.wrap{{max-width:780px;margin:0 auto;padding:32px 18px}}.card{{background:linear-gradient(180deg,rgba(25,32,51,.94),rgba(14,18,31,.96));border:1px solid #303b58;border-radius:28px;padding:24px;box-shadow:0 20px 70px #0008}}.top{{display:flex;align-items:center;gap:18px}}img{{width:86px;height:86px;border-radius:50%;border:3px solid #7c5cff}}.muted{{color:#9aa6bd}}.stats{{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:22px}}.stat{{background:#202940;border:1px solid #303b58;border-radius:18px;padding:16px}}a{{color:#b7c4ff}}</style></head><body><div class=wrap><div class=card><div class=top><img src='{avatar}'><div><h1>{user['name']}</h1><div class=muted>Discord ID: {user['id']}</div></div></div><div class=stats><div class=stat><b>{stats['games']}</b><br><span class=muted>Игр</span></div><div class=stat><b>{stats['wins']}</b><br><span class=muted>Побед</span></div><div class=stat><b>{stats['losses']}</b><br><span class=muted>Поражений</span></div><div class=stat><b>{stats['winrate']}%</b><br><span class=muted>Выживаемость</span></div></div><p><a href='/auth/logout?next=/'>Выйти</a></p></div></div></body></html>"""
+        return web.Response(text=html, content_type="text/html")
+
     def _player_by_token(self, game: GameState, token: str | None) -> Optional[PlayerState]:
         if not token:
             return None
@@ -901,6 +1032,17 @@ class BunkerCog(commands.Cog):
             if p.token == token:
                 return p
         return None
+
+    def _player_from_request(self, game: GameState, request: web.Request) -> Optional[PlayerState]:
+        user = self._discord_user_from_request(request)
+        if user:
+            try:
+                p = game.players.get(int(user["id"]))
+                if p:
+                    return p
+            except Exception:
+                pass
+        return self._player_by_token(game, request.query.get("token"))
 
     def _is_web_host(self, game: GameState, player: PlayerState | None) -> bool:
         return bool(player and player.id == game.host_id)
@@ -935,28 +1077,29 @@ class BunkerCog(commands.Cog):
     async def web_game(self, request: web.Request):
         gid = request.match_info["game_id"]
         token = request.query.get("token", "")
+        discord_user = self._discord_user_from_request(request)
         html = f"""<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Бункер {gid}</title>
 <style>
 :root{{--bg:#070912;--panel:#121827;--panel2:#192033;--soft:#202940;--line:#303b58;--text:#f7f8ff;--muted:#9aa6bd;--accent:#7c5cff;--accent2:#00d4ff;--danger:#ff4d6d;--good:#35d07f;--warn:#ffd166}}
-*{{box-sizing:border-box}}body{{margin:0;background:radial-gradient(circle at 10% -10%,#2c3766 0,#070912 48%),radial-gradient(circle at 100% 0,#371e42 0,#070912 35%);color:var(--text);font-family:Inter,Arial,sans-serif}}.wrap{{max-width:1440px;margin:0 auto;padding:22px}}.top{{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}}h1{{margin:0;font-size:34px}}.badge{{background:rgba(32,41,64,.86);border:1px solid var(--line);border-radius:999px;padding:10px 14px;color:var(--muted)}}.grid{{display:grid;grid-template-columns:1.35fr .65fr;gap:16px}}.panel,.player,.mycard,.field{{background:linear-gradient(180deg,rgba(25,32,51,.92),rgba(14,18,31,.94));border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:0 18px 55px #0007}}.cat{{min-height:250px;background:linear-gradient(135deg,rgba(124,92,255,.28),rgba(18,24,39,.95) 45%,rgba(255,77,109,.18));position:relative;overflow:hidden}}.cat:after{{content:'☢';position:absolute;right:18px;bottom:-34px;font-size:170px;opacity:.07}}.muted{{color:var(--muted)}}button{{background:linear-gradient(135deg,var(--accent),#5d77ff);color:white;border:0;border-radius:14px;padding:11px 14px;margin:5px;cursor:pointer;font-weight:800;box-shadow:0 8px 24px #0005}}button:hover{{filter:brightness(1.08)}}button:disabled{{opacity:.45;cursor:not-allowed}}button.danger{{background:linear-gradient(135deg,#ff4d6d,#c92a45)}}button.good{{background:linear-gradient(135deg,#22aa68,#35d07f)}}button.ghost{{background:#232c44}}.stat{{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}}.stat span{{background:rgba(32,41,64,.8);border:1px solid var(--line);border-radius:15px;padding:10px 12px}}.cards{{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}}.field{{padding:14px;border-radius:18px}}.field b{{display:block;margin-bottom:6px}}.field.revealed{{border-color:rgba(53,208,127,.55)}}.field.hidden{{opacity:.8}}.field.clickable{{cursor:pointer}}.field.clickable:hover{{border-color:var(--accent2);transform:translateY(-1px)}}.player{{padding:16px}}.alive{{border-color:rgba(53,208,127,.55)}}.dead{{opacity:.55}}.history{{max-height:380px;overflow:auto}}.history p{{margin:8px 0;color:#d9ddef}}.timer{{font-size:44px;font-weight:950;color:var(--warn);letter-spacing:1px;margin-top:8px}}.vote-card{{display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(32,41,64,.85);border:1px solid var(--line);border-radius:18px;padding:12px;margin:8px 0}}.admin-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}}.theme-row{{display:flex;gap:6px;flex-wrap:wrap}}.theme-dot{{width:34px;height:34px;border-radius:50%;border:2px solid #fff3;cursor:pointer}}.nuclear{{--accent:#7c5cff;--accent2:#00d4ff}}.virus{{--accent:#25c26e;--accent2:#a3ff12}}.ice{{--accent:#54b6ff;--accent2:#c8f5ff}}.fire{{--accent:#ff7a18;--accent2:#ff2f5f}}.space{{--accent:#9b5cff;--accent2:#ff5cbb}}a{{color:#b7c4ff}}@media(max-width:980px){{.grid{{grid-template-columns:1fr}}.top{{align-items:flex-start;flex-direction:column}}}}
-</style></head><body class="nuclear"><div class="wrap"><div class="top"><div><h1>🏚️ Бункер</h1><div class="muted">Game ID: {gid}</div></div><div class="badge" id="topStatus">Загрузка...</div></div><div id="app">Загрузка...</div></div>
+*{{box-sizing:border-box}}body{{margin:0;background:radial-gradient(circle at 10% -10%,#2c3766 0,#070912 48%),radial-gradient(circle at 100% 0,#371e42 0,#070912 35%);color:var(--text);font-family:Inter,Arial,sans-serif}}.wrap{{max-width:1440px;margin:0 auto;padding:22px}}.top{{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}}h1{{margin:0;font-size:34px}}.badge{{background:rgba(32,41,64,.86);border:1px solid var(--line);border-radius:999px;padding:10px 14px;color:var(--muted)}}.userbox{{display:flex;align-items:center;gap:10px;background:rgba(32,41,64,.86);border:1px solid var(--line);border-radius:999px;padding:8px 12px;color:var(--text);text-decoration:none}}.userbox img{{width:34px;height:34px;border-radius:50%}}.topright{{display:flex;align-items:center;gap:10px;flex-wrap:wrap}}.grid{{display:grid;grid-template-columns:1.35fr .65fr;gap:16px}}.panel,.player,.mycard,.field{{background:linear-gradient(180deg,rgba(25,32,51,.92),rgba(14,18,31,.94));border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:0 18px 55px #0007}}.cat{{min-height:250px;background:linear-gradient(135deg,rgba(124,92,255,.28),rgba(18,24,39,.95) 45%,rgba(255,77,109,.18));position:relative;overflow:hidden}}.cat:after{{content:'☢';position:absolute;right:18px;bottom:-34px;font-size:170px;opacity:.07}}.muted{{color:var(--muted)}}button{{background:linear-gradient(135deg,var(--accent),#5d77ff);color:white;border:0;border-radius:14px;padding:11px 14px;margin:5px;cursor:pointer;font-weight:800;box-shadow:0 8px 24px #0005}}button:hover{{filter:brightness(1.08)}}button:disabled{{opacity:.45;cursor:not-allowed}}button.danger{{background:linear-gradient(135deg,#ff4d6d,#c92a45)}}button.good{{background:linear-gradient(135deg,#22aa68,#35d07f)}}button.ghost{{background:#232c44}}.stat{{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}}.stat span{{background:rgba(32,41,64,.8);border:1px solid var(--line);border-radius:15px;padding:10px 12px}}.cards{{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}}.field{{padding:14px;border-radius:18px}}.field b{{display:block;margin-bottom:6px}}.field.revealed{{border-color:rgba(53,208,127,.55)}}.field.hidden{{opacity:.8}}.field.clickable{{cursor:pointer}}.field.clickable:hover{{border-color:var(--accent2);transform:translateY(-1px)}}.player{{padding:16px}}.alive{{border-color:rgba(53,208,127,.55)}}.dead{{opacity:.55}}.history{{max-height:380px;overflow:auto}}.history p{{margin:8px 0;color:#d9ddef}}.timer{{font-size:44px;font-weight:950;color:var(--warn);letter-spacing:1px;margin-top:8px}}.vote-card{{display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(32,41,64,.85);border:1px solid var(--line);border-radius:18px;padding:12px;margin:8px 0}}.admin-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}}.theme-row{{display:flex;gap:6px;flex-wrap:wrap}}.theme-dot{{width:34px;height:34px;border-radius:50%;border:2px solid #fff3;cursor:pointer}}.nuclear{{--accent:#7c5cff;--accent2:#00d4ff}}.virus{{--accent:#25c26e;--accent2:#a3ff12}}.ice{{--accent:#54b6ff;--accent2:#c8f5ff}}.fire{{--accent:#ff7a18;--accent2:#ff2f5f}}.space{{--accent:#9b5cff;--accent2:#ff5cbb}}a{{color:#b7c4ff}}@media(max-width:980px){{.grid{{grid-template-columns:1fr}}.top{{align-items:flex-start;flex-direction:column}}}}
+</style></head><body class="nuclear"><div class="wrap"><div class="top"><div><h1>🏚️ Бункер</h1><div class="muted">Game ID: {gid}</div></div><div class="topright"><div class="badge" id="topStatus">Загрузка...</div><div id="userTop"></div></div></div><div id="app">Загрузка...</div></div>
 <script>
-const GAME_ID = {json.dumps(gid)}; const TOKEN = {json.dumps(token)}; let last=null;
+const GAME_ID = {json.dumps(gid)}; const TOKEN = {json.dumps(token)}; const DISCORD_USER = {json.dumps(discord_user, ensure_ascii=False)}; let last=null;
 const fieldTitles={{profession:'Профессия',age:'Возраст',health:'Здоровье',hobby:'Хобби',phobia:'Фобия',baggage:'Багаж',backpack:'Рюкзак',skill:'Навык',fact:'Факт',special_card:'Спецкарта'}};
 async function api(path, body){{ const r=await fetch(`/bunker_api/${{GAME_ID}}/${{path}}?token=${{encodeURIComponent(TOKEN)}}`,{{method:'POST',headers:{{'Content-Type':'application/json'}},body:JSON.stringify(body||{{}})}}); const d=await r.json().catch(()=>({{}})); if(!r.ok) alert('Ошибка: '+(d.error||r.status)); await load(); return d; }}
 async function load(){{ const r=await fetch(`/bunker_api/${{GAME_ID}}?token=${{encodeURIComponent(TOKEN)}}&t=${{Date.now()}}`); const d=await r.json(); last=d; render(d); updateClock(); }}
 function esc(s){{return String(s??'').replace(/[&<>]/g,c=>({{'&':'&amp;','<':'&lt;','>':'&gt;'}}[c]));}}
 function tleft(ts){{ if(!ts)return '—'; const left=Math.max(0, Math.floor(ts-Date.now()/1000)); return String(Math.floor(left/60)).padStart(2,'0')+':'+String(left%60).padStart(2,'0'); }}
-function updateClock(){{ if(last){{ const el=document.getElementById('timer'); if(el) el.textContent=tleft(last.round_ends_at); const st=document.getElementById('topStatus'); if(st) st.textContent=`${{last.status}} • ${{last.players.length}}/${{last.max_players}} игроков`; }} }}
+function updateClock(){{ if(last){{ const el=document.getElementById('timer'); if(el) el.textContent=tleft(last.round_ends_at); const st=document.getElementById('topStatus'); if(st) st.textContent=`${{last.status}} • ${{last.players.length}}/${{last.max_players}} игроков`; }} const top=document.getElementById('userTop'); if(top){{ if(DISCORD_USER){{ const av=DISCORD_USER.avatar||'https://cdn.discordapp.com/embed/avatars/0.png'; top.innerHTML=`<a class="userbox" href="/profile"><img src="${{av}}"><span>${{esc(DISCORD_USER.name)}}</span></a>`; }} else {{ top.innerHTML=`<a class="userbox" href="/auth/discord/login?next=${{encodeURIComponent(location.pathname+location.search)}}">Войти через Discord</a>`; }} }} }}
 function setTheme(t){{ document.body.className=t; localStorage.setItem('bunker_theme',t); }}
 function themePanel(){{return `<div class=panel><h2>🎨 Тема</h2><div class=theme-row><div class=theme-dot style="background:linear-gradient(135deg,#7c5cff,#00d4ff)" onclick="setTheme('nuclear')"></div><div class=theme-dot style="background:linear-gradient(135deg,#25c26e,#a3ff12)" onclick="setTheme('virus')"></div><div class=theme-dot style="background:linear-gradient(135deg,#54b6ff,#c8f5ff)" onclick="setTheme('ice')"></div><div class=theme-dot style="background:linear-gradient(135deg,#ff7a18,#ff2f5f)" onclick="setTheme('fire')"></div><div class=theme-dot style="background:linear-gradient(135deg,#9b5cff,#ff5cbb)" onclick="setTheme('space')"></div></div></div>`}}
 function fieldHtml(k, title, val, clickable, revealed){{return `<div class="field ${{revealed?'revealed':'hidden'}} ${{clickable?'clickable':''}}" ${{clickable?`onclick="api('reveal',{{field:'${{k}}'}})"`:''}}><b>${{esc(title)}}</b><span class=muted>${{esc(val)}}</span>${{clickable?'<br><small>Нажми, чтобы раскрыть</small>':''}}</div>`}}
-function myCard(d){{ if(!d.me) return '<div class=panel><h2>👤 Моя карточка</h2><p class=muted>Открой личную ссылку с token из Discord.</p></div>'; let html='<div class=mycard><h2>👤 Моя карточка</h2><div class=cards>'; for(const [k,title] of Object.entries(fieldTitles)){{ const val=d.me.card[title]??'—'; const rev=d.me.revealed_keys.includes(k); const clickable=d.me.alive && d.status!='ended' && !rev; html+=fieldHtml(k,title,val,clickable,rev); }} html+='</div></div>'; return html; }}
+function myCard(d){{ if(!d.me) return '<div class=panel><h2>👤 Моя карточка</h2><p class=muted>Войди через Discord или открой личную ссылку с token из Discord.</p></div>'; let html='<div class=mycard><h2>👤 Моя карточка</h2><div class=cards>'; for(const [k,title] of Object.entries(fieldTitles)){{ const val=d.me.card[title]??'—'; const rev=d.me.revealed_keys.includes(k); const clickable=d.me.alive && d.status!='ended' && !rev; html+=fieldHtml(k,title,val,clickable,rev); }} html+='</div></div>'; return html; }}
 function publicPlayerCard(p){{ let fields=Object.entries(p.card||{{}}).map(([k,v])=>`<div class="field ${{v==='Не раскрывал'?'hidden':'revealed'}}"><b>${{esc(k)}}</b><span class=muted>${{esc(v)}}</span></div>`).join(''); return `<div class="player ${{p.alive?'alive':'dead'}}"><h3>${{p.alive?'✅':'❌'}} ${{esc(p.name)}}</h3><div class=cards>${{fields}}</div></div>` }}
-function adminPanel(d){{ if(!d.is_host) return ''; return `<div class=panel><h2>🎛️ Панель ведущего</h2><div class=admin-grid><button onclick="api('admin',{{action:'next_round'}})">След. раунд</button><button onclick="api('admin',{{action:'vote'}})" class=danger>Голосование</button><button onclick="api('admin',{{action:'event'}})" class=good>Событие</button><button onclick="api('admin',{{action:'finish_vote'}})" class=ghost>Итог голос.</button><button onclick="api('admin',{{action:'end'}})" class=danger>Закончить</button></div><p class=muted>Эта панель видна только ведущему по личной ссылке.</p></div>` }}
+function adminPanel(d){{ if(!d.is_host) return ''; return `<div class=panel><h2>🎛️ Панель ведущего</h2><div class=admin-grid><button onclick="api('admin',{{action:'next_round'}})">Новый этап</button><button onclick="api('admin',{{action:'vote'}})" class=danger>Голосование</button><button onclick="api('admin',{{action:'event'}})" class=good>Событие</button><button onclick="api('admin',{{action:'finish_vote'}})" class=ghost>Итог голос.</button><button onclick="api('admin',{{action:'end'}})" class=danger>Закончить</button></div><p class=muted>Эта панель видна только ведущему. Игроки раскрывают любые категории сами на сайте.</p></div>` }}
 function presenterPanel(d){{ if(!d.is_host) return ''; return `<div class=panel><h2>🖥️ Экран ведущего</h2><p>Живых: <b>${{d.players.filter(p=>p.alive).length}}</b> • Мест: <b>${{d.places??'?'}}</b> • Голосов: <b>${{d.votes_count||0}}</b></p><p class=muted>Все раскрытые карточки обновляются автоматически.</p></div>` }}
 function render(d){{ if(d.error){{document.getElementById('app').innerHTML=`<div class=panel>Ошибка: ${{esc(d.error)}}</div>`;return;}} if(localStorage.getItem('bunker_theme')) setTheme(localStorage.getItem('bunker_theme'));
-let vote = d.can_vote ? `<div class=panel><h2>🗳️ Голосование</h2>${{d.players.filter(p=>p.alive && (!d.me || p.id!==d.me.id)).map(p=>`<div class=vote-card><div>👤 <b>${{esc(p.name)}}</b><br><span class=muted>${{esc(p.card?.['Профессия']||'Профессия скрыта')}}</span></div><button class=danger onclick="api('vote',{{target_id:'${{p.id}}'}})">Голосовать</button></div>`).join('')}}</div>` : '';
+let vote = d.can_vote ? `<div class=panel><h2>🗳️ Голосование</h2>${{d.players.filter(p=>p.alive && (!d.me || p.id!==d.me.id)).map(p=>`<div class=vote-card><div>👤 <b>${{esc(p.name)}}</b><br><span class=muted>${{esc(p.card?.['Профессия']||'Не раскрывал профессию')}}</span></div><button class=danger onclick="api('vote',{{target_id:'${{p.id}}'}})">Голосовать</button></div>`).join('')}}</div>` : '';
 let players = `<div class=panel><h2>👥 Карточки игроков</h2><p class=muted>Если игрок ничего не раскрыл — будет написано «Не раскрывал».</p><div class=cards>${{d.players.map(publicPlayerCard).join('')}}</div></div>`;
 let histItems=(d.history||[]).slice(-40).reverse(); let hist = `<div class=panel history><h2>📜 Replay / История</h2>${{histItems.map(x=>`<p>${{esc(x)}}</p>`).join('') || '<p class=muted>Событий пока нет.</p>'}}</div>`;
 let event = d.current_event ? `<div class=panel><h2>⚠️ Событие</h2><p>${{esc(d.current_event)}}</p></div>` : '';
@@ -995,7 +1138,7 @@ load(); setInterval(load, 3000); setInterval(updateClock, 1000);
         game = self.games.get(request.match_info["game_id"])
         if not game:
             return web.json_response({"error": "game_not_found"}, status=404)
-        me = self._player_by_token(game, request.query.get("token"))
+        me = self._player_from_request(game, request)
         ended = game.status == "ended"
         players = []
         for p in game.players.values():
@@ -1029,7 +1172,7 @@ load(); setInterval(load, 3000); setInterval(updateClock, 1000);
         game = self.games.get(request.match_info["game_id"])
         if not game:
             return web.json_response({"error": "game_not_found"}, status=404)
-        me = self._player_by_token(game, request.query.get("token"))
+        me = self._player_from_request(game, request)
         if not me or not me.alive or game.status == "ended":
             return web.json_response({"error": "cant_reveal"}, status=403)
         body = await request.json()
@@ -1049,7 +1192,7 @@ load(); setInterval(load, 3000); setInterval(updateClock, 1000);
         game = self.games.get(request.match_info["game_id"])
         if not game:
             return web.json_response({"error": "game_not_found"}, status=404)
-        me = self._player_by_token(game, request.query.get("token"))
+        me = self._player_from_request(game, request)
         if not me or not me.alive or game.status != "voting":
             return web.json_response({"error": "cant_vote"}, status=403)
         body = await request.json()
@@ -1068,16 +1211,15 @@ load(); setInterval(load, 3000); setInterval(updateClock, 1000);
         game = self.games.get(request.match_info["game_id"])
         if not game:
             return web.json_response({"error": "game_not_found"}, status=404)
-        me = self._player_by_token(game, request.query.get("token"))
+        me = self._player_from_request(game, request)
         if not self._is_web_host(game, me):
             return web.json_response({"error": "host_only"}, status=403)
         body = await request.json()
         action = str(body.get("action", ""))
         if action == "next_round":
-            if game.round_index < len(ROUND_FIELDS) - 1:
-                game.round_index += 1
+            game.status = "started"
             game.round_ends_at = time.time() + int(self.cfg.get("round_seconds", 180))
-            add_history(game, f"Ведущий переключил раунд: {game.current_round()[1]}")
+            add_history(game, "Ведущий начал новый этап обсуждения")
         elif action == "vote":
             game.status = "voting"
             game.votes = {}
@@ -1114,7 +1256,7 @@ load(); setInterval(load, 3000); setInterval(updateClock, 1000);
         game = self.games.get(request.match_info["game_id"])
         if not game:
             return web.json_response({"error": "game_not_found"}, status=404)
-        me = self._player_by_token(game, request.query.get("token"))
+        me = self._player_from_request(game, request)
         if not me or not me.alive or game.status not in ("started", "voting"):
             return web.json_response({"error": "cant_use_special"}, status=403)
         result = self.apply_special_card(game, me)

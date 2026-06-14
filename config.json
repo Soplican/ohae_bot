@@ -8,7 +8,8 @@
   "modules_enabled": [
     "logging_system",
     "birthday",
-    "bunker"
+    "bunker",
+    "safe_sage"
   ],
   "discohook_local": {
     "enabled": true,
