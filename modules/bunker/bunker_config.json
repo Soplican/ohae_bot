@@ -14,6 +14,6 @@
   "embed_color": 5793266,
   "discord_oauth_enabled": true,
   "discord_client_id": "1514060686458884206",
-  "discord_client_secret": "LBH8l91FEQcZWLRsJTmwDH6NaYiD7oQh",
+  "discord_client_secret": "",
   "discord_redirect_uri": "https://ohae.bothost.tech/auth/discord/callback"
 }
