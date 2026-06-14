@@ -3,10 +3,10 @@ from __future__ import annotations
 import asyncio
 import json
 import math
-import os
 import random
 import secrets
 import time
+import os
 import urllib.parse
 import string
 from dataclasses import dataclass, asdict, field
@@ -47,6 +47,9 @@ DEFAULT_CFG = {
     "discord_client_id": "",
     "discord_client_secret": "",
     "discord_redirect_uri": "https://ohae.bothost.tech/auth/discord/callback",
+    "season_name": "",
+    "push_updates": True,
+    "ai_host_default": True,
 }
 
 PROFESSIONS = [
@@ -196,6 +199,12 @@ RANDOM_EVENTS = [
     ("⚠️ Медосмотр", "Все игроки должны раскрыть здоровье.", "reveal_health"),
     ("⚠️ Проверка вещей", "Все игроки должны раскрыть багаж.", "reveal_baggage"),
     ("⚠️ Технический сбой", "Бункеру срочно нужен полезный навык. Все раскрывают навык.", "reveal_skill"),
+    ("⚠️ Обвал тоннеля", "Выход из бункера частично заблокирован. Следующий этап обсуждения сокращён до 90 секунд.", "timer_short"),
+    ("⚠️ Сигнал с поверхности", "Бункер поймал радиосигнал. Все игроки раскрывают факт.", "reveal_fact"),
+    ("⚠️ Неожиданный осмотр", "Система безопасности требует раскрыть рюкзак у всех живых игроков.", "reveal_backpack"),
+    ("⚠️ Спор за лидерство", "Все живые игроки получают право один раз изменить свой голос до конца текущего голосования.", "revote"),
+    ("⚠️ Сбой системы доступа", "Один случайный живой игрок получает защиту от следующего голосования.", "random_shield"),
+    ("⚠️ Тайный склад", "Один случайный живой игрок получает дополнительный багаж.", "random_extra_baggage"),
 ]
 
 def code_id(length: int = 6) -> str:
@@ -287,6 +296,7 @@ class GameState:
     history: list[str] = field(default_factory=list)
     round_ends_at: Optional[float] = None
     current_event: str = ""
+    ai_enabled: bool = True
 
     def public_url(self, cfg: dict, token: str | None = None) -> str:
         base = (cfg.get("public_base_url") or "").rstrip("/")
@@ -402,6 +412,7 @@ class BunkerCog(commands.Cog):
                     voice_channel_id=g.get("voice_channel_id"), message_id=g.get("message_id"), round_index=int(g.get("round_index", 0)),
                     votes={int(k): int(v) for k, v in g.get("votes", {}).items()},
                     history=g.get("history", []), round_ends_at=g.get("round_ends_at"), current_event=g.get("current_event", ""),
+                    ai_enabled=bool(g.get("ai_enabled", self.cfg.get("ai_host_default", True))),
                 )
                 for pid, p in g.get("players", {}).items():
                     game.players[int(pid)] = PlayerState(
@@ -496,7 +507,7 @@ class BunkerCog(commands.Cog):
         gid = code_id()
         while gid in self.games:
             gid = code_id()
-        game = GameState(id=gid, guild_id=interaction.guild.id, channel_id=interaction.channel_id, host_id=interaction.user.id, max_players=players)
+        game = GameState(id=gid, guild_id=interaction.guild.id, channel_id=interaction.channel_id, host_id=interaction.user.id, max_players=players, ai_enabled=bool(self.cfg.get("ai_host_default", True)))
         self.games[gid] = game
         self.persist()
         embed = self.lobby_embed(game)
@@ -751,7 +762,12 @@ class BunkerCog(commands.Cog):
         losers = [pid for pid, n in counts.items() if n == max_votes]
         loser_id = random.choice(losers)
         loser = game.players.get(loser_id)
-        if loser:
+        if loser and loser.card.get("_shield"):
+            loser.card["_shield"] = False
+            add_history(game, f"{loser.name} был защищён спецкартой и не выбыл")
+            if isinstance(ch, discord.TextChannel):
+                await ch.send(f"🛡️ **{loser.name}** защищён спецкартой и не выбывает.")
+        elif loser:
             loser.alive = False
             add_history(game, f"Выгнан игрок: {loser.name}")
         game.votes = {}
@@ -811,17 +827,56 @@ class BunkerCog(commands.Cog):
             return
         stats = read_stats()
         alive_ids = {p.id for p in game.alive_players()}
+        season_name = self.current_season()
         for p in game.players.values():
             key = str(p.id)
-            rec = stats.get(key, {"name": p.name, "games": 0, "wins": 0, "losses": 0})
+            rec = stats.get(key, {"name": p.name, "games": 0, "wins": 0, "losses": 0, "seasons": {}})
             rec["name"] = p.name
             rec["games"] = int(rec.get("games", 0)) + 1
+            rec.setdefault("seasons", {})
+            srec = rec["seasons"].get(season_name, {"games": 0, "wins": 0, "losses": 0})
+            srec["games"] = int(srec.get("games", 0)) + 1
             if p.id in alive_ids:
                 rec["wins"] = int(rec.get("wins", 0)) + 1
+                srec["wins"] = int(srec.get("wins", 0)) + 1
             else:
                 rec["losses"] = int(rec.get("losses", 0)) + 1
+                srec["losses"] = int(srec.get("losses", 0)) + 1
+            rec["seasons"][season_name] = srec
             stats[key] = rec
         save_stats(stats)
+
+    async def apply_dynamic_event(self, game: GameState, title: str, desc: str, action: str) -> None:
+        if action == "places_plus" and game.places is not None:
+            game.places += 1
+        elif action == "places_minus" and game.places is not None:
+            game.places = max(1, game.places - 1)
+        elif action == "timer_short":
+            game.round_ends_at = time.time() + 90
+        elif action == "revote":
+            game.votes = {}
+        elif action == "random_shield":
+            alive = game.alive_players()
+            if alive:
+                target = random.choice(alive)
+                target.card["_shield"] = True
+                desc += f"\nЗащиту получил: {target.name}."
+        elif action == "random_extra_baggage":
+            alive = game.alive_players()
+            if alive:
+                target = random.choice(alive)
+                target.card["extra_baggage"] = choose_from_pack("baggage", ITEMS)
+                desc += f"\nДополнительный багаж получил: {target.name}."
+        elif action.startswith("reveal_"):
+            key = action.replace("reveal_", "")
+            for p in game.alive_players():
+                if key not in p.revealed:
+                    p.revealed.append(key)
+        ai_note = ""
+        if game.ai_enabled:
+            ai_note = "\n\n🧠 AI-ведущий: обсудите, кому это событие помогает, а кому мешает."
+        game.current_event = f"{title}\n{desc}{ai_note}"
+        add_history(game, f"Событие: {title}")
 
     async def trigger_event(self, interaction: discord.Interaction, game_id: str):
         game = self.games.get(game_id)
@@ -830,20 +885,10 @@ class BunkerCog(commands.Cog):
         if not self.is_host_or_admin(interaction.user, interaction.guild, game):
             return await interaction.response.send_message("Событие запускает ведущий или админ.", ephemeral=True)
         title, desc, action = random.choice(RANDOM_EVENTS)
-        if action == "places_plus" and game.places is not None:
-            game.places += 1
-        elif action == "places_minus" and game.places is not None:
-            game.places = max(1, game.places - 1)
-        elif action.startswith("reveal_"):
-            key = action.replace("reveal_", "")
-            for p in game.alive_players():
-                if key not in p.revealed:
-                    p.revealed.append(key)
-        game.current_event = f"{title}\n{desc}"
-        add_history(game, f"Событие: {title}")
+        await self.apply_dynamic_event(game, title, desc, action)
         self.persist()
         await self.refresh_message(game)
-        await interaction.response.send_message(embed=discord.Embed(title=title, description=desc, color=0xFEE75C))
+        await interaction.response.send_message(embed=discord.Embed(title=title, description=game.current_event, color=0xFEE75C))
 
     def apply_special_card(self, game: GameState, player: PlayerState) -> str:
         if player.special_used:
@@ -851,7 +896,43 @@ class BunkerCog(commands.Cog):
         text = str(player.card.get("special_card", ""))
         player.special_used = True
         low = text.lower()
-        if "увелич" in low and "мест" in low and game.places is not None:
+        alive_others = [p for p in game.alive_players() if p.id != player.id]
+
+        def random_other() -> PlayerState | None:
+            return random.choice(alive_others) if alive_others else None
+
+        if "иммунитет" in low or "защит" in low:
+            player.card["_shield"] = True
+            result = "получена защита от следующего голосования."
+        elif "узнать" in low or "подсмотреть" in low:
+            target = random_other()
+            if target:
+                hidden = [k for k, _ in ROUND_FIELDS if k not in target.revealed]
+                key = random.choice(hidden or ["profession"])
+                player.card["_peek"] = f"{target.name}: {self._field_map_ru().get(key, key)} — {self._field_value(target, key)}"
+                result = f"тайно подсмотрено: {player.card['_peek']}"
+            else:
+                result = "некого подсмотреть."
+        elif "украсть" in low or "забрать" in low:
+            target = random_other()
+            if target:
+                player.card["extra_baggage"] = target.card.get("baggage", "—")
+                target.card["baggage"] = choose_from_pack("baggage", ITEMS)
+                result = f"получен багаж игрока {target.name}; ему выдан новый случайный багаж."
+            else:
+                result = "некого выбрать для обмена."
+        elif "обмен" in low or "меняется" in low or "поменяться" in low:
+            target = random_other()
+            if target:
+                key = random.choice(["profession", "health", "hobby", "phobia", "baggage", "backpack", "fact"])
+                player.card[key], target.card[key] = target.card.get(key), player.card.get(key)
+                result = f"случайный обмен с {target.name}: {self._field_map_ru().get(key, key)}."
+            else:
+                result = "некого выбрать для обмена."
+        elif "отмен" in low and "голос" in low:
+            game.votes.pop(player.id, None)
+            result = "свой голос отменён."
+        elif "увелич" in low and "мест" in low and game.places is not None:
             game.places += 1
             result = "+1 место в бункере."
         elif "уменьш" in low and "мест" in low and game.places is not None:
@@ -859,41 +940,40 @@ class BunkerCog(commands.Cog):
             result = "-1 место в бункере."
         elif "дополнительный багаж" in low:
             player.card["extra_baggage"] = choose_from_pack("baggage", ITEMS)
-            result = f"Получен дополнительный багаж: {player.card['extra_baggage']}"
+            result = f"получен дополнительный багаж: {player.card['extra_baggage']}"
         elif "дополнительный рюкзак" in low:
             player.card["extra_backpack"] = choose_from_pack("backpacks", ITEMS)
-            result = f"Получен дополнительный рюкзак: {player.card['extra_backpack']}"
-        elif "второй случайный факт" in low or "второй" in low and "факт" in low:
+            result = f"получен дополнительный рюкзак: {player.card['extra_backpack']}"
+        elif "второй" in low and "факт" in low:
             player.card["extra_fact"] = choose_from_pack("facts", FACTS)
-            result = f"Получен дополнительный факт: {player.card['extra_fact']}"
-        elif "второе случайное хобби" in low or "второе" in low and "хобби" in low:
+            result = f"получен дополнительный факт: {player.card['extra_fact']}"
+        elif "второе" in low and "хобби" in low:
             player.card["extra_hobby"] = choose_from_pack("hobbies", HOBBIES)
-            result = f"Получено второе хобби: {player.card['extra_hobby']}"
-        elif "вторую случайную профессию" in low or "двух област" in low:
+            result = f"получено второе хобби: {player.card['extra_hobby']}"
+        elif "вторую" in low and "профес" in low or "двух област" in low:
             player.card["extra_profession"] = choose_from_pack("professions", PROFESSIONS)
-            result = f"Получена вторая профессия: {player.card['extra_profession']}"
+            result = f"получена вторая профессия: {player.card['extra_profession']}"
         elif "здоров" in low:
             player.card["health"] = choose_from_pack("health", HEALTH)
-            result = f"Здоровье изменено: {player.card['health']}"
+            result = f"здоровье изменено: {player.card['health']}"
         elif "фоби" in low:
             player.card["phobia"] = choose_from_pack("phobias", PHOBIAS)
-            result = f"Фобия изменена: {player.card['phobia']}"
+            result = f"фобия изменена: {player.card['phobia']}"
         elif "хобби" in low:
             player.card["hobby"] = choose_from_pack("hobbies", HOBBIES)
-            result = f"Хобби изменено: {player.card['hobby']}"
+            result = f"хобби изменено: {player.card['hobby']}"
         elif "багаж" in low:
             player.card["baggage"] = choose_from_pack("baggage", ITEMS)
-            result = f"Багаж изменён: {player.card['baggage']}"
+            result = f"багаж изменён: {player.card['baggage']}"
         elif "рюкзак" in low:
             player.card["backpack"] = choose_from_pack("backpacks", ITEMS)
-            result = f"Рюкзак изменён: {player.card['backpack']}"
+            result = f"рюкзак изменён: {player.card['backpack']}"
         elif "професс" in low:
             player.card["profession"] = choose_from_pack("professions", PROFESSIONS)
-            result = f"Профессия изменена: {player.card['profession']}"
+            result = f"профессия изменена: {player.card['profession']}"
         else:
-            # Универсальный эффект для сложных карт, которые требуют выбора игрока.
             player.card["extra_fact"] = choose_from_pack("facts", FACTS)
-            result = f"Сложная карта применена как бонусный факт: {player.card['extra_fact']}"
+            result = f"сложная карта применена как бонусный факт: {player.card['extra_fact']}"
         add_history(game, f"{player.name} использовал спецкарту")
         self.persist()
         return result
@@ -906,6 +986,8 @@ class BunkerCog(commands.Cog):
         app.router.add_get("/auth/discord/callback", self.web_discord_callback)
         app.router.add_get("/auth/logout", self.web_logout)
         app.router.add_get("/profile", self.web_profile)
+        app.router.add_get("/replay/{game_id}", self.web_replay)
+        app.router.add_get("/bunker_events/{game_id}", self.web_events)
         app.router.add_get("/bunker_api/{game_id}", self.web_api_game)
         app.router.add_post("/bunker_api/{game_id}/vote", self.web_api_vote)
         app.router.add_post("/bunker_api/{game_id}/special", self.web_api_special)
@@ -936,16 +1018,10 @@ class BunkerCog(commands.Cog):
         }
 
     async def web_discord_login(self, request: web.Request):
-        client_id = (
-            os.getenv("DISCORD_CLIENT_ID")
-            or str(self.cfg.get("discord_client_id") or "").strip()
-        )
-        redirect_uri = (
-            os.getenv("DISCORD_REDIRECT_URI")
-            or str(self.cfg.get("discord_redirect_uri") or f"{self._public_base()}/auth/discord/callback").strip()
-        )
+        client_id = (os.getenv("DISCORD_CLIENT_ID") or str(self.cfg.get("discord_client_id") or "")).strip()
+        redirect_uri = (os.getenv("DISCORD_REDIRECT_URI") or str(self.cfg.get("discord_redirect_uri") or f"{self._public_base()}/auth/discord/callback")).strip()
         if not client_id:
-            return web.Response(text="Discord OAuth не настроен: добавь DISCORD_CLIENT_ID в переменные окружения или discord_client_id в bunker_config.json", status=500)
+            return web.Response(text="Discord OAuth не настроен: добавь discord_client_id в bunker_config.json", status=500)
         next_url = request.query.get("next") or "/"
         state = secrets.token_urlsafe(16)
         params = {
@@ -968,20 +1044,11 @@ class BunkerCog(commands.Cog):
         code = request.query.get("code")
         if not code:
             return web.Response(text="Discord не вернул code", status=400)
-        client_id = (
-            os.getenv("DISCORD_CLIENT_ID")
-            or str(self.cfg.get("discord_client_id") or "").strip()
-        )
-        client_secret = (
-            os.getenv("DISCORD_CLIENT_SECRET")
-            or str(self.cfg.get("discord_client_secret") or "").strip()
-        )
-        redirect_uri = (
-            os.getenv("DISCORD_REDIRECT_URI")
-            or str(self.cfg.get("discord_redirect_uri") or f"{self._public_base()}/auth/discord/callback").strip()
-        )
+        client_id = (os.getenv("DISCORD_CLIENT_ID") or str(self.cfg.get("discord_client_id") or "")).strip()
+        client_secret = (os.getenv("DISCORD_CLIENT_SECRET") or str(self.cfg.get("discord_client_secret") or "")).strip()
+        redirect_uri = (os.getenv("DISCORD_REDIRECT_URI") or str(self.cfg.get("discord_redirect_uri") or f"{self._public_base()}/auth/discord/callback")).strip()
         if not client_id or not client_secret:
-            return web.Response(text="Discord OAuth не настроен: нужен DISCORD_CLIENT_ID и DISCORD_CLIENT_SECRET в переменных окружения или конфиге", status=500)
+            return web.Response(text="Discord OAuth не настроен: нужен client_id и client_secret", status=500)
         async with ClientSession() as session:
             token_resp = await session.post("https://discord.com/api/oauth2/token", data={
                 "client_id": client_id,
@@ -1022,7 +1089,7 @@ class BunkerCog(commands.Cog):
         stats = self.user_stats(int(user["id"]))
         avatar = user.get("avatar") or "https://cdn.discordapp.com/embed/avatars/0.png"
         html = f"""<!doctype html><html lang=ru><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Профиль</title><style>
-body{{margin:0;background:radial-gradient(circle at 15% 0,#27325b,#070912 45%);color:#f7f8ff;font-family:Inter,Arial,sans-serif}}.wrap{{max-width:780px;margin:0 auto;padding:32px 18px}}.card{{background:linear-gradient(180deg,rgba(25,32,51,.94),rgba(14,18,31,.96));border:1px solid #303b58;border-radius:28px;padding:24px;box-shadow:0 20px 70px #0008}}.top{{display:flex;align-items:center;gap:18px}}img{{width:86px;height:86px;border-radius:50%;border:3px solid #7c5cff}}.muted{{color:#9aa6bd}}.stats{{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:22px}}.stat{{background:#202940;border:1px solid #303b58;border-radius:18px;padding:16px}}a{{color:#b7c4ff}}</style></head><body><div class=wrap><div class=card><div class=top><img src='{avatar}'><div><h1>{user['name']}</h1><div class=muted>Discord ID: {user['id']}</div></div></div><div class=stats><div class=stat><b>{stats['games']}</b><br><span class=muted>Игр</span></div><div class=stat><b>{stats['wins']}</b><br><span class=muted>Побед</span></div><div class=stat><b>{stats['losses']}</b><br><span class=muted>Поражений</span></div><div class=stat><b>{stats['winrate']}%</b><br><span class=muted>Выживаемость</span></div></div><p><a href='/auth/logout?next=/'>Выйти</a></p></div></div></body></html>"""
+body{{margin:0;background:radial-gradient(circle at 15% 0,#27325b,#070912 45%);color:#f7f8ff;font-family:Inter,Arial,sans-serif}}.wrap{{max-width:780px;margin:0 auto;padding:32px 18px}}.card{{background:linear-gradient(180deg,rgba(25,32,51,.94),rgba(14,18,31,.96));border:1px solid #303b58;border-radius:28px;padding:24px;box-shadow:0 20px 70px #0008}}.top{{display:flex;align-items:center;gap:18px}}img{{width:86px;height:86px;border-radius:50%;border:3px solid #7c5cff}}.muted{{color:#9aa6bd}}.stats{{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:22px}}.stat{{background:#202940;border:1px solid #303b58;border-radius:18px;padding:16px}}a{{color:#b7c4ff}}</style></head><body><div class=wrap><div class=card><div class=top><img src='{avatar}'><div><h1>{user['name']}</h1><div class=muted>Discord ID: {user['id']}</div></div></div><div class=stats><div class=stat><b>{stats['games']}</b><br><span class=muted>Игр всего</span></div><div class=stat><b>{stats['wins']}</b><br><span class=muted>Побед всего</span></div><div class=stat><b>{stats['winrate']}%</b><br><span class=muted>Выживаемость</span></div><div class=stat><b>{stats['season']}</b><br><span class=muted>Сезон</span></div><div class=stat><b>{stats['season_games']}</b><br><span class=muted>Игр сезон</span></div><div class=stat><b>{stats['season_wins']}</b><br><span class=muted>Побед сезон</span></div><div class=stat><b>{stats['season_winrate']}%</b><br><span class=muted>Выживаемость сезон</span></div></div><p><a href='/auth/logout?next=/'>Выйти</a></p></div></div></body></html>"""
         return web.Response(text=html, content_type="text/html")
 
     def _player_by_token(self, game: GameState, token: str | None) -> Optional[PlayerState]:
@@ -1105,26 +1172,53 @@ let histItems=(d.history||[]).slice(-40).reverse(); let hist = `<div class=panel
 let event = d.current_event ? `<div class=panel><h2>⚠️ Событие</h2><p>${{esc(d.current_event)}}</p></div>` : '';
 let stats = d.me?.stats ? `<div class=panel><h2>🏆 Профиль</h2><p>Игр: <b>${{d.me.stats.games}}</b></p><p>Побед: <b>${{d.me.stats.wins}}</b></p><p>Поражений: <b>${{d.me.stats.losses}}</b></p><p>Выживаемость: <b>${{d.me.stats.winrate}}%</b></p></div>` : '';
 let special = d.me ? `<div class=panel><h2>🃏 Спецкарта</h2><p>${{esc(d.me.card['Спецкарта'])}}</p><button class=good onclick="api('special')" ${{d.me.special_used?'disabled':''}}>${{d.me.special_used?'Уже использована':'Использовать'}}</button></div>` : '';
-document.getElementById('app').innerHTML=`<div class=grid><main><div class="panel cat"><h2>${{esc(d.catastrophe.title||'Ожидание старта')}}</h2><p>${{esc(d.catastrophe.desc||'')}}</p><div class=stat><span>Статус: <b>${{esc(d.status)}}</b></span><span>Игроков: <b>${{d.players.length}}/${{d.max_players}}</b></span><span>Мест: <b>${{d.places??'?'}}</b></span><span>Шанс: <b>${{d.survival_rate?Math.round(d.survival_rate*100)+'%':'?'}}</b></span><span>Voice: <b>${{d.voice.online}}/${{d.voice.allowed}}</b></span></div><p class=muted>Проблема бункера: ${{esc(d.bunker_problem||'будет выбрана при старте')}}</p><div class=timer id=timer>${{tleft(d.round_ends_at)}}</div></div>${{presenterPanel(d)}}${{players}}${{myCard(d)}}${{vote}}</main><aside>${{adminPanel(d)}}${{event}}${{special}}${{stats}}${{themePanel()}}${{hist}}</aside></div>`; }}
-load(); setInterval(load, 3000); setInterval(updateClock, 1000);
+document.getElementById('app').innerHTML=`<div class=grid><main><div class="panel cat"><h2>${{esc(d.catastrophe.title||'Ожидание старта')}}</h2><p>${{esc(d.catastrophe.desc||'')}}</p><div class=stat><span>Статус: <b>${{esc(d.status)}}</b></span><span>Игроков: <b>${{d.players.length}}/${{d.max_players}}</b></span><span>Мест: <b>${{d.places??'?'}}</b></span><span>Шанс: <b>${{d.survival_rate?Math.round(d.survival_rate*100)+'%':'?'}}</b></span><span>Voice: <b>${{d.voice.online}}/${{d.voice.allowed}}</b></span><span>AI: <b>${{d.ai_enabled?'ON':'OFF'}}</b></span><span>Сезон: <b>${{esc(d.season)}}</b></span></div><p class=muted>Проблема бункера: ${{esc(d.bunker_problem||'будет выбрана при старте')}}</p><div class=timer id=timer>${{tleft(d.round_ends_at)}}</div></div>${{presenterPanel(d)}}${{players}}${{myCard(d)}}${{vote}}</main><aside>${{adminPanel(d)}}${{event}}${{special}}${{stats}}${{themePanel()}}${{hist}}</aside></div>`; }}
+load();
+if (!!window.EventSource) {{ const es = new EventSource(`/bunker_events/${{GAME_ID}}`); es.onmessage = () => load(); es.onerror = () => {{}}; }} else {{ setInterval(load, 3000); }}
+setInterval(updateClock, 1000);
 </script></body></html>"""
         return web.Response(text=html, content_type="text/html")
 
     def voice_status(self, game: GameState) -> dict[str, Any]:
         guild = self.bot.get_guild(game.guild_id)
         online = 0
+        names: list[str] = []
+        missing: list[str] = []
         if guild and game.voice_channel_id:
             vc = guild.get_channel(game.voice_channel_id)
             if isinstance(vc, discord.VoiceChannel):
                 ids = {m.id for m in vc.members}
-                online = sum(1 for p in game.players.values() if p.id in ids)
-        return {"online": online, "allowed": len(game.players)}
+                for p in game.players.values():
+                    if p.id in ids:
+                        online += 1
+                        names.append(p.name)
+                    else:
+                        missing.append(p.name)
+        else:
+            missing = [p.name for p in game.players.values()]
+        return {"online": online, "allowed": len(game.players), "names": names, "missing": missing}
+
+    def current_season(self) -> str:
+        custom = str(self.cfg.get("season_name") or "").strip()
+        if custom:
+            return custom
+        return time.strftime("%Y-%m")
 
     def user_stats(self, user_id: int) -> dict[str, Any]:
-        rec = read_stats().get(str(user_id), {"games": 0, "wins": 0, "losses": 0})
+        rec = read_stats().get(str(user_id), {"games": 0, "wins": 0, "losses": 0, "seasons": {}})
         games = int(rec.get("games", 0))
         wins = int(rec.get("wins", 0))
-        return {"games": games, "wins": wins, "losses": int(rec.get("losses", 0)), "winrate": round((wins / games) * 100) if games else 0}
+        season_name = self.current_season()
+        srec = (rec.get("seasons") or {}).get(season_name, {"games": 0, "wins": 0, "losses": 0})
+        sgames = int(srec.get("games", 0))
+        swins = int(srec.get("wins", 0))
+        return {
+            "games": games, "wins": wins, "losses": int(rec.get("losses", 0)),
+            "winrate": round((wins / games) * 100) if games else 0,
+            "season": season_name, "season_games": sgames, "season_wins": swins,
+            "season_losses": int(srec.get("losses", 0)),
+            "season_winrate": round((swins / sgames) * 100) if sgames else 0,
+        }
 
     async def _send_channel_notice(self, game: GameState, text: str = "", embed: discord.Embed | None = None):
         ch = self.bot.get_channel(game.channel_id)
@@ -1133,6 +1227,57 @@ load(); setInterval(load, 3000); setInterval(updateClock, 1000);
                 await ch.send(content=text or None, embed=embed)
             except Exception:
                 pass
+
+    async def web_events(self, request: web.Request):
+        game = self.games.get(request.match_info["game_id"])
+        if not game:
+            return web.Response(text="game_not_found", status=404)
+        resp = web.StreamResponse(status=200, headers={
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+        })
+        await resp.prepare(request)
+        last_payload = ""
+        try:
+            while True:
+                payload = json.dumps({
+                    "ts": time.time(), "status": game.status, "history_len": len(game.history),
+                    "votes": len(game.votes), "alive": len(game.alive_players()),
+                    "round_ends_at": game.round_ends_at, "event": game.current_event,
+                }, ensure_ascii=False)
+                if payload != last_payload:
+                    await resp.write(f"data: {payload}\n\n".encode("utf-8"))
+                    last_payload = payload
+                await asyncio.sleep(1)
+        except (asyncio.CancelledError, ConnectionResetError, RuntimeError):
+            pass
+        return resp
+
+    async def web_replay(self, request: web.Request):
+        game = self.games.get(request.match_info["game_id"])
+        if not game:
+            return web.Response(text="Replay не найден", status=404)
+        players_html = "".join(
+            f"<div class='card'><h3>{'✅' if p.alive else '❌'} {p.name}</h3>" +
+            "".join(f"<p><b>{self._field_map_ru().get(k,k)}:</b> {self._field_value(p,k)}</p>" for k,_ in ROUND_FIELDS) +
+            "</div>" for p in game.players.values()
+        )
+        hist = "".join(f"<p>{h}</p>" for h in game.history)
+        html = f"""<!doctype html><html lang=ru><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Replay {game.id}</title><style>body{{margin:0;background:#070912;color:#f7f8ff;font-family:Arial,sans-serif}}.wrap{{max-width:1200px;margin:auto;padding:24px}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}}.card{{background:#151d31;border:1px solid #303b58;border-radius:18px;padding:16px}}.hist{{background:#101827;border-radius:18px;padding:16px;margin:14px 0}}a{{color:#b7c4ff}}</style></head><body><div class=wrap><a href='/bunker/{game.id}'>← Назад к игре</a><h1>📜 Replay Бункера {game.id}</h1><div class=hist><h2>История</h2>{hist or '<p>История пустая</p>'}</div><h2>Карточки игроков</h2><div class=grid>{players_html}</div></div></body></html>"""
+        return web.Response(text=html, content_type="text/html")
+
+    def season_leaderboard(self, limit: int = 10) -> list[dict[str, Any]]:
+        season_name = self.current_season()
+        rows = []
+        for uid, rec in read_stats().items():
+            srec = (rec.get("seasons") or {}).get(season_name, {})
+            games = int(srec.get("games", 0))
+            wins = int(srec.get("wins", 0))
+            if games:
+                rows.append({"id": uid, "name": rec.get("name", uid), "games": games, "wins": wins, "winrate": round(wins / games * 100)})
+        rows.sort(key=lambda r: (r["wins"], r["winrate"], r["games"]), reverse=True)
+        return rows[:limit]
 
     async def web_api_game(self, request: web.Request):
         game = self.games.get(request.match_info["game_id"])
@@ -1154,7 +1299,9 @@ load(); setInterval(load, 3000); setInterval(updateClock, 1000);
             "catastrophe": {"title": game.catastrophe_title, "desc": game.catastrophe_desc},
             "players": players, "can_vote": bool(me and me.alive and game.status == "voting"),
             "votes_count": len(game.votes), "history": game.history, "round_ends_at": game.round_ends_at,
-            "current_event": game.current_event, "voice": self.voice_status(game),
+            "current_event": game.current_event, "voice": self.voice_status(game), "ai_enabled": game.ai_enabled,
+            "replay_url": f"/replay/{game.id}", "season": self.current_season(),
+            "leaderboard": self.season_leaderboard(),
             "is_host": self._is_web_host(game, me), "me": None,
         }
         if me:
@@ -1231,18 +1378,16 @@ load(); setInterval(load, 3000); setInterval(updateClock, 1000);
             return web.json_response({"ok": True})
         elif action == "event":
             title, desc, effect = random.choice(RANDOM_EVENTS)
-            if effect == "places_plus" and game.places is not None:
-                game.places += 1
-            elif effect == "places_minus" and game.places is not None:
-                game.places = max(1, game.places - 1)
-            elif effect.startswith("reveal_"):
-                key = effect.replace("reveal_", "")
-                for p in game.alive_players():
-                    if key not in p.revealed:
-                        p.revealed.append(key)
-            game.current_event = f"{title}\n{desc}"
-            add_history(game, f"Событие: {title}")
-            await self._send_channel_notice(game, embed=discord.Embed(title=title, description=desc, color=0xFEE75C))
+            await self.apply_dynamic_event(game, title, desc, effect)
+            await self._send_channel_notice(game, embed=discord.Embed(title=title, description=game.current_event, color=0xFEE75C))
+        elif action == "ai_toggle":
+            game.ai_enabled = not game.ai_enabled
+            add_history(game, f"AI-ведущий {'включён' if game.ai_enabled else 'выключен'}")
+        elif action == "move_voice":
+            guild = self.bot.get_guild(game.guild_id)
+            if guild:
+                await self.create_voice_and_move(guild, game)
+            add_history(game, "Ведущий обновил закрытый voice и перенос игроков")
         elif action == "end":
             await self.end_game_by_state(game, manual=True)
             return web.json_response({"ok": True})
